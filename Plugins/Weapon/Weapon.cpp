@@ -757,6 +757,30 @@ int32_t Weapon::GetAttackModifierVersus(CNWSCreatureStats* pStats, CNWSCreature*
         nBaseItem = pWeapon->m_nBaseItem;
     }
 
+    if((nBaseItem == Constants::BaseItem::Sling || nBaseItem == Constants::BaseItem::Shortbow)
+        && !(pStats->HasFeat(Constants::Feat::PersonalFirearmsProficiency)))
+    {
+       nMod -= 4; 
+    }
+    else if((nBaseItem == Constants::BaseItem::Longbow || nBaseItem == Constants::BaseItem::LightCrossbow)
+        && !(pStats->HasFeat(Constants::Feat::AdvancedFirearmsProficiency)))
+    {
+        nMod -= 4;
+    }
+    else if(nBaseItem == Constants::BaseItem::HeavyCrossbow 
+        && !(pStats->HasFeat(Constants::Feat::HeavyFirearmsProficiency)))
+    {
+        nMod -= 4;
+    }
+    else if(plugin.GetIsArchaicWeapon(nBaseItem) && !(pStats->HasFeat(Constants::Feat::WeaponProficiencyArchaic)))
+    {
+        nMod -= 4;
+    }
+    else if(plugin.GetIsExoticWeapon(nBaseItem) && !(pStats->HasFeat(Constants::Feat::WeaponProficiencyArchaic)))
+    {
+        nMod -= 4;
+    }
+
     auto w = plugin.m_GreaterWeaponFocusMap.find(nBaseItem);
     feat = (w == plugin.m_GreaterWeaponFocusMap.end()) ? -1 : w->second;
 
@@ -801,6 +825,20 @@ int32_t Weapon::GetMeleeAttackBonus(CNWSCreatureStats* pStats, int32_t bOffHand,
         nBaseItem = pWeapon->m_nBaseItem;
     }
 
+    if(plugin.GetIsArchaicWeapon(nBaseItem) && !(pStats->HasFeat(Constants::Feat::WeaponProficiencyArchaic)))
+    {
+        nBonus -= 4;
+    }
+    else if(plugin.GetIsExoticWeapon(nBaseItem) && !(pStats->HasFeat(Constants::Feat::WeaponProficiencyExotic)))
+    {
+        nBonus -= 4;
+    }
+    else if((nBaseItem == Constants::BaseItem::Kukri || nBaseItem == Constants::BaseItem::TwobladedSword)
+        && !(pStats->HasFeat(Constants::Feat::WeaponProficiencyExotic) || pStats->HasFeat(Constants::Feat::LightSaberProf)))
+    {
+       nBonus -= 4; 
+    }
+
     auto w = plugin.m_GreaterWeaponFocusMap.find(nBaseItem);
     feat = (w == plugin.m_GreaterWeaponFocusMap.end()) ? -1 : w->second;
 
@@ -835,6 +873,35 @@ int32_t Weapon::GetRangedAttackBonus(CNWSCreatureStats* pStats, int32_t bInclude
     }
 
     nBaseItem = pWeapon->m_nBaseItem;
+
+    if((nBaseItem == Constants::BaseItem::Sling || nBaseItem == Constants::BaseItem::Shortbow)
+        && !(pStats->HasFeat(Constants::Feat::PersonalFirearmsProficiency)))
+    {
+       nBonus -= 4; 
+    }
+    else if((nBaseItem == Constants::BaseItem::Longbow || nBaseItem == Constants::BaseItem::LightCrossbow)
+        && !(pStats->HasFeat(Constants::Feat::AdvancedFirearmsProficiency)))
+    {
+        nBonus -= 4;
+    }
+    else if(nBaseItem == Constants::BaseItem::HeavyCrossbow 
+        && !(pStats->HasFeat(Constants::Feat::HeavyFirearmsProficiency)))
+    {
+        nBonus -= 4;
+    }
+    else if((nBaseItem == Constants::BaseItem::Kukri || nBaseItem == Constants::BaseItem::TwobladedSword)
+        && !(pStats->HasFeat(Constants::Feat::WeaponProficiencyExotic) || pStats->HasFeat(Constants::Feat::LightSaberProf)))
+    {
+       nBonus -= 4; 
+    }
+    else if(plugin.GetIsExoticWeapon(nBaseItem) && !(pStats->HasFeat(Constants::Feat::WeaponProficiencyExotic)))
+    {
+        nBonus -= 4;
+    }
+    else if(plugin.GetIsArchaicWeapon(nBaseItem) && !(pStats->HasFeat(Constants::Feat::WeaponProficiencyArchaic)))
+    {
+        nBonus -= 4;
+    }
 
     auto w = plugin.m_GreaterWeaponFocusMap.find(nBaseItem);
     feat = (w == plugin.m_GreaterWeaponFocusMap.end()) ? -1 : w->second;
@@ -978,6 +1045,52 @@ int Weapon::GetLevelByClass(CNWSCreatureStats *pStats, uint32_t nClassType)
     }
 
     return 0;
+}
+
+bool Weapon::GetIsArchaicWeapon(uint32_t nBaseItem)
+{
+    switch (nBaseItem)
+    {
+    case Constants::BaseItem::Longsword:
+    case Constants::BaseItem::Battleaxe:
+    case Constants::BaseItem::BastardSword:
+    case Constants::BaseItem::Halberd:
+    case Constants::BaseItem::Greatsword:
+    case Constants::BaseItem::Greataxe:
+    case Constants::BaseItem::Katana:
+    case Constants::BaseItem::MorningStar:
+    case Constants::BaseItem::Rapier:
+    case Constants::BaseItem::Scimitar:
+    case Constants::BaseItem::DwarvenWaraxe:
+    case Constants::BaseItem::CEP_Falchion:
+    case Constants::BaseItem::CEP_Maul:
+    case Constants::BaseItem::CEP_MercurialLongSword:
+    case Constants::BaseItem::CEP_MercurialGreatSword:
+        return true;  
+    default:
+        return false;
+    }
+}
+
+bool Weapon::GetIsExoticWeapon(uint32_t nBaseItem)
+{
+    switch (nBaseItem)
+    {
+    case Constants::BaseItem::DireMace:
+    case Constants::BaseItem::DoubleAxe:
+    case Constants::BaseItem::HeavyFlail:
+    case Constants::BaseItem::Kama:
+    case Constants::BaseItem::Shuriken:
+    case Constants::BaseItem::Whip:
+    case Constants::BaseItem::Lance:
+    case Constants::BaseItem::CEP_Sai:
+    case Constants::BaseItem::CEP_Nunchaku:
+    case Constants::BaseItem::CEP_DoubleScimitar:
+    case Constants::BaseItem::CEP_WindfireWheel:
+        return true;  
+    default:
+        return false;
+    }
 }
 
 }

@@ -1090,6 +1090,21 @@ namespace Feat
         PlayerTool08                                  = 1113,
         PlayerTool09                                  = 1114,
         PlayerTool10                                  = 1115,
+        AutoFire                                      = 2600,
+        BurstFire                                     = 2601,
+        DeadAim                                       = 2602,
+        FarShot                                       = 2603,
+        PersonalFirearmsProficiency                   = 2604,
+        Reload                                        = 2605,        
+        AdvancedFirearmsProficiency                   = 2606,
+        HeavyFirearmsProficiency                      = 2607,
+        QuickReload                                   = 2608,
+        WeaponProficiencyArchaic                      = 2609,
+        SharpShooting                                 = 2611,
+        QuickDraw                                     = 2612,
+        ShotOnTheRun                                  = 2613,
+        Strafe                                        = 2614,
+        LightSaberProf                                = 2633
     };
     constexpr int32_t MIN   = 0;
     constexpr int32_t MAX   = 65535;
