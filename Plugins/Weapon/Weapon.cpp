@@ -952,6 +952,16 @@ int32_t Weapon::GetAttackModifierVersus(CNWSCreatureStats* pStats, CNWSCreature*
         nMod -= 4;
     }
 
+    // PnP rules- additional attack reductions for Mercurials
+    if(nBaseItem == Constants::BaseItem::CEP_MercurialLongSword && !(pStats->HasFeat(Constants::Feat::WeaponProficiencyExotic)))
+    {
+        nMod -= 2;
+    }
+    else if(nBaseItem == Constants::BaseItem::CEP_MercurialGreatSword && !(pStats->HasFeat(Constants::Feat::WeaponProficiencyExotic)))
+    {
+        nMod -= 3;
+    }
+
     auto w = plugin.m_GreaterWeaponFocusMap.find(nBaseItem);
 
     bApplicableFeatExists = w != plugin.m_GreaterWeaponFocusMap.end();
@@ -1025,6 +1035,16 @@ int32_t Weapon::GetMeleeAttackBonus(CNWSCreatureStats* pStats, int32_t bOffHand,
         && !(pStats->HasFeat(Constants::Feat::WeaponProficiencyExotic) || pStats->HasFeat(Constants::Feat::LightSaberProf)))
     {
        nBonus -= 4; 
+    }
+
+    // PnP rules- additional attack reductions for Mercurials
+    if(nBaseItem == Constants::BaseItem::CEP_MercurialLongSword && !(pStats->HasFeat(Constants::Feat::WeaponProficiencyExotic)))
+    {
+        nBonus -= 2;
+    }
+    else if(nBaseItem == Constants::BaseItem::CEP_MercurialGreatSword && !(pStats->HasFeat(Constants::Feat::WeaponProficiencyExotic)))
+    {
+        nBonus -= 3;
     }
 
     auto w = plugin.m_GreaterWeaponFocusMap.find(nBaseItem);
