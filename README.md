@@ -1,5 +1,6 @@
 [![Discord](https://img.shields.io/discord/382306806866771978.svg?colorB=7289DA&label=Discord&logo=Discord&logoColor=7289DA&style=flat-square)](https://discord.gg/hxTt8Fr)
 
+<<<<<<< HEAD
 # NWNX:EE (build 8193.13 - v80 - STABLE build)
 
 This branch contains the latest stable build of NWN. It is only current in cases when the [master](https://github.com/nwnxee/unified/tree/master) branch is targeting a development build. If the master branch is targeting a stable build, this branch is one stable build out of date.
@@ -9,6 +10,14 @@ This branch contains the latest stable build of NWN. It is only current in cases
 - nwserver-linux md5: `459c28f45ff9dd932a5b696aa572fc3a`
 
 
+=======
+# NWNX:EE (build 8193.16 - v81 - STABLE build)
+
+- Latest release: [build8193.16](https://github.com/nwnxee/unified/releases/tag/build8193.16) - [Changelog](https://github.com/nwnxee/unified/blob/master/CHANGELOG.md#819316)
+- Docker tag: `nwnxee/unified:build8193.16`
+- nwserver-linux md5: `e58f839dbe21f024f94432961b38683f`
+
+>>>>>>> 28f505e54bf7282f4b3c722939851ec51308b75e
 @mainpage
 @tableofcontents
 
@@ -97,7 +106,7 @@ As of NWN:EE Release 8193 it is possible to run `nwserver-linux` and NWNX:EE on 
 
 ## Compiling NWNX:EE (native)
 
-Please note that you need a modern C++17 compatible compiler to build NWNX:EE. The code is confirmed to build on GCC 7.4+ or Clang 5.0+. It may be possible to build on an older compiler.
+Please note that you need a modern C++17 compatible compiler to build NWNX:EE. The code is confirmed to build on GCC 7.4+, Clang 5.0+ might work but is not supported. It may be possible to build on an older compiler.
 
 Each plugin may have one or more dependencies that must be satisfied in order to build that plugin. Refer to each individual plugin's CMakeLists.txt to determine their dependencies.
 

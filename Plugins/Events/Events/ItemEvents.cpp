@@ -40,7 +40,7 @@ ItemEvents::ItemEvents(Services::HooksProxy* hooker)
 
     Events::InitOnFirstSubscribe("NWNX_ON_USE_ITEM_.*", [hooker]() {
         s_UseItemHook = hooker->RequestExclusiveHook
-            <API::Functions::_ZN12CNWSCreature7UseItemEjhhj6Vectorj>
+            <API::Functions::_ZN12CNWSCreature7UseItemEjhhj6Vectorji>
             (&UseItemHook);
     });
 
@@ -138,7 +138,8 @@ int32_t ItemEvents::UseItemHook(
     uint8_t subPropIndex,
     ObjectID target,
     Vector targetPosition,
-    ObjectID area)
+    ObjectID area,
+    int32_t bUseCharges)
 {
     int32_t retVal;
     std::string result;
@@ -151,12 +152,13 @@ int32_t ItemEvents::UseItemHook(
         Events::PushEventData("TARGET_POSITION_X", std::to_string(targetPosition.x));
         Events::PushEventData("TARGET_POSITION_Y", std::to_string(targetPosition.y));
         Events::PushEventData("TARGET_POSITION_Z", std::to_string(targetPosition.z));
-    return Events::SignalEvent(ev, thisPtr->m_idSelf, &result);
+        Events::PushEventData("USE_CHARGES",       std::to_string(bUseCharges));
+        return Events::SignalEvent(ev, thisPtr->m_idSelf, &result);
     };
 
     if (PushAndSignal("NWNX_ON_USE_ITEM_BEFORE"))
     {
-        retVal = s_UseItemHook->CallOriginal<int32_t>(thisPtr, item, propIndex, subPropIndex, target, targetPosition, area);
+        retVal = s_UseItemHook->CallOriginal<int32_t>(thisPtr, item, propIndex, subPropIndex, target, targetPosition, area, bUseCharges);
     }
     else
     {
@@ -288,9 +290,10 @@ uint32_t ItemEvents::FindItemWithBaseItemIdHook(CItemRepository* thisPtr, uint32
 
 int32_t ItemEvents::LearnScrollHook(CNWSCreature *thisPtr, ObjectID oidScrollToLearn)
 {
-    int32_t retVal;
+    int32_t retVal = false;
 
     auto PushAndSignal = [&](const std::string& ev) -> bool {
+        Events::PushEventData("RESULT", std::to_string(retVal));
         Events::PushEventData("SCROLL", Utils::ObjectIDToString(oidScrollToLearn));
         return Events::SignalEvent(ev, thisPtr->m_idSelf);
     };
@@ -329,7 +332,7 @@ int32_t ItemEvents::CanEquipItemHook(CNWSCreature* thisPtr, CNWSItem* pItem, uin
     Events::PushEventData("BEFORE_RESULT", std::to_string(retVal));
     Events::SignalEvent("NWNX_ON_VALIDATE_ITEM_EQUIP_AFTER", thisPtr->m_idSelf, &sAfterEventResult);
 
-    retVal = sAfterEventResult.empty() ? retVal : sAfterEventResult == "1";
+    retVal = sAfterEventResult.empty() ? retVal : std::stoi(sAfterEventResult);
 
     return retVal;
 }
