@@ -235,6 +235,7 @@ namespace BaseItem
         CEP_DoublePick                             = 324,
         CEP_Flowers                                = 325,
         CEP_Cloak                                  = 349,
+        CEP_Kukri2                                 = 313,
     };
     constexpr int32_t MIN   = 0;
     constexpr int32_t MAX   = 65535;

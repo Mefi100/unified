@@ -1281,6 +1281,13 @@ bool Weapon::GetIsArchaicWeapon(uint32_t nBaseItem)
     case Constants::BaseItem::CEP_Maul:
     case Constants::BaseItem::CEP_MercurialLongSword:
     case Constants::BaseItem::CEP_MercurialGreatSword:
+    case Constants::BaseItem::Trident:
+    case Constants::BaseItem::CEP_Trident:
+    case Constants::BaseItem::CEP_HeavyPick:
+    case Constants::BaseItem::CEP_LightPick:
+    case Constants::BaseItem::CEP_HeavyMace:
+    case Constants::BaseItem::CEP_Goad:
+
         return true;  
     default:
         return false;
@@ -1302,6 +1309,8 @@ bool Weapon::GetIsExoticWeapon(uint32_t nBaseItem)
     case Constants::BaseItem::CEP_Nunchaku:
     case Constants::BaseItem::CEP_DoubleScimitar:
     case Constants::BaseItem::CEP_WindfireWheel:
+    case Constants::BaseItem::CEP_Katar:
+    case Constants::BaseItem::CEP_Kukri2:
         return true;  
     default:
         return false;
