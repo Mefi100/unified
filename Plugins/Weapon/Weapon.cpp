@@ -1262,7 +1262,6 @@ int Weapon::GetLevelByClass(CNWSCreatureStats *pStats, uint32_t nClassType)
     return 0;
 }
 
-<<<<<<< HEAD
 bool Weapon::GetIsArchaicWeapon(uint32_t nBaseItem)
 {
     switch (nBaseItem)
@@ -1307,7 +1306,6 @@ bool Weapon::GetIsExoticWeapon(uint32_t nBaseItem)
     default:
         return false;
     }
-=======
 ArgumentStack Weapon::SetOneHalfStrength(ArgumentStack&& args)
 {
     auto objectId = Services::Events::ExtractArgument<ObjectID>(args);
@@ -1340,7 +1338,6 @@ ArgumentStack Weapon::GetOneHalfStrength(ArgumentStack&& args)
     }
 
     return Services::Events::Arguments(retVal);
->>>>>>> 28f505e54bf7282f4b3c722939851ec51308b75e
 }
 
 }
