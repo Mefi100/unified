@@ -1306,6 +1306,8 @@ bool Weapon::GetIsExoticWeapon(uint32_t nBaseItem)
     default:
         return false;
     }
+}
+
 ArgumentStack Weapon::SetOneHalfStrength(ArgumentStack&& args)
 {
     auto objectId = Services::Events::ExtractArgument<ObjectID>(args);
