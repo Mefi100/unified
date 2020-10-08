@@ -8,26 +8,36 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 https://github.com/nwnxee/unified/compare/build8193.16...HEAD
 
 ### Added
-N/A
+- Events: added skippable Acquire events to ItemEvents
+- Tweaks: `NWNX_TWEAKS_HIDE_PLAYERS_ON_CHAR_LIST`
 
 ##### New Plugins
 N/A
 
 ##### New NWScript Functions
-N/A
+- Area: GetTileInfo()
+- Creature: {Get|Set}WalkAnimation()
+- Object: GetCurrentAnimation()
+- Util: GetScriptParamIsSet()
 
 ### Changed
-N/A
+- Events: `NWNX_ON_DM_SPAWN_OBJECT_*` now provides the resref as event data.
+- Events: `NWNX_ON_STORE_REQUEST_*_AFTER` now provides the result as event data.
+- Util: added an optional appearance type parameter to CreateDoor()
+- Visibility: added two new visibility types to always show an object regardless of range.
 
 ### Deprecated
-N/A
+- Tweaks: `NWNX_TWEAKS_HIDE_DMS_ON_CHAR_LIST` has been deprecated, use `NWNX_TWEAKS_HIDE_PLAYERS_ON_CHAR_LIST` now
 
 ### Removed
 N/A
 
 ### Fixed
 - Administration: fix crash in DeletePlayerCharacter()
+- Object: fixed a possible crash in CheckFit()
 - Race: fixed effect clean up after level up
+- Rename: community name only obfuscates once a server reset
+- Weapon: fixed bug in SetGreaterWeaponFocusFeat()
 
 ## 8193.16
 https://github.com/nwnxee/unified/compare/build8193.13...build8193.16

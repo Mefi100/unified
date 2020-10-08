@@ -99,6 +99,7 @@ Object::Object(Services::ProxyServiceList* services)
     REGISTER(DoSpellImmunity);
     REGISTER(DoSpellLevelAbsorption);
     REGISTER(SetHasInventory);
+    REGISTER(GetCurrentAnimation);
 
 #undef REGISTER
 }
@@ -352,8 +353,16 @@ ArgumentStack Object::CheckFit(ArgumentStack&& args)
         {
             return Services::Events::Arguments(retVal);
         }
-        retVal = 0;
         const auto baseitem = Services::Events::ExtractArgument<int32_t>(args);
+
+        if (pRepo == nullptr || Globals::Rules()->m_pBaseItemArray->GetBaseItem(baseitem) == nullptr)
+        {
+            LOG_ERROR("Base Item or Object Repository not found.");
+            return Services::Events::Arguments(retVal);
+        }
+
+        retVal = 0;
+
         static CNWSItem *tmp = new CNWSItem(Constants::OBJECT_INVALID);
         tmp->m_nBaseItem = baseitem;
 
@@ -982,4 +991,17 @@ ArgumentStack Object::SetHasInventory(ArgumentStack&& args)
 
     return Services::Events::Arguments();
 }
+
+ArgumentStack Object::GetCurrentAnimation(ArgumentStack&& args)
+{
+    int32_t retVal = -1;
+
+    if (auto *pObject = object(args))
+    {
+        retVal = pObject->m_nAnimation;
+    }
+
+    return Services::Events::Arguments(retVal);
+}
+
 }
