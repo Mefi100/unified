@@ -1104,6 +1104,7 @@ namespace Feat
         QuickDraw                                     = 2612,
         ShotOnTheRun                                  = 2613,
         Strafe                                        = 2614,
+        RulersOfTheSea                                = 2629,
         LightSaberProf                                = 2633
     };
     constexpr int32_t MIN   = 0;

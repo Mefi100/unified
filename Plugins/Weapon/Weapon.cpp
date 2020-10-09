@@ -909,6 +909,8 @@ int32_t Weapon::GetAttackModifierVersus(CNWSCreatureStats* pStats, CNWSCreature*
     uint32_t nBaseItem;
     int32_t bApplicableFeatExists = 0;
     int32_t bHasApplicableFeat = 0;
+    bool bCanUse = false;
+    int nModelPart = 0;
 
     int nMod = plugin.m_GetAttackModifierVersusHook->CallOriginal<int32_t>(pStats, pCreature);
 
@@ -926,28 +928,56 @@ int32_t Weapon::GetAttackModifierVersus(CNWSCreatureStats* pStats, CNWSCreature*
     else
     {
         nBaseItem = pWeapon->m_nBaseItem;
+        nModelPart = pWeapon->m_nModelPart[2];
     }
 
     if((nBaseItem == Constants::BaseItem::Sling || nBaseItem == Constants::BaseItem::Shortbow)
-        && !(pStats->HasFeat(Constants::Feat::PersonalFirearmsProficiency)))
+        && pStats->HasFeat(Constants::Feat::PersonalFirearmsProficiency))
     {
-       nMod -= 4; 
+       bCanUse = true;
     }
     else if((nBaseItem == Constants::BaseItem::Longbow || nBaseItem == Constants::BaseItem::LightCrossbow)
-        && !(pStats->HasFeat(Constants::Feat::AdvancedFirearmsProficiency)))
+        && pStats->HasFeat(Constants::Feat::AdvancedFirearmsProficiency))
     {
-        nMod -= 4;
+        bCanUse = true;
     }
     else if(nBaseItem == Constants::BaseItem::HeavyCrossbow 
-        && !(pStats->HasFeat(Constants::Feat::HeavyFirearmsProficiency)))
+        && pStats->HasFeat(Constants::Feat::HeavyFirearmsProficiency))
     {
-        nMod -= 4;
+        bCanUse = true;
     }
-    else if(plugin.GetIsArchaicWeapon(nBaseItem) && !(pStats->HasFeat(Constants::Feat::WeaponProficiencyArchaic)))
+    else if(plugin.GetIsArchaicWeapon(nBaseItem) && pStats->HasFeat(Constants::Feat::WeaponProficiencyArchaic))
     {
-        nMod -= 4;
+        bCanUse = true;
     }
-    else if(plugin.GetIsExoticWeapon(nBaseItem) && !(pStats->HasFeat(Constants::Feat::WeaponProficiencyArchaic)))
+    else if(plugin.GetIsExoticWeapon(nBaseItem) && pStats->HasFeat(Constants::Feat::WeaponProficiencyExotic))
+    {
+        bCanUse = true;
+    }
+    else if((nBaseItem == Constants::BaseItem::Kukri || nBaseItem == Constants::BaseItem::TwobladedSword)
+        && pStats->HasFeat(Constants::Feat::LightSaberProf))
+    {
+       bCanUse = true; 
+    }
+
+    // special case - RulersOfTheSea feat
+    if((nBaseItem == Constants::BaseItem::Trident
+     || nBaseItem == Constants::BaseItem::CEP_Trident
+     || nBaseItem == Constants::BaseItem::CEP_Goad)
+        && pStats->HasFeat(Constants::Feat::RulersOfTheSea))
+    {
+        bCanUse = true;
+        nMod += 1;
+    }
+
+    if((nBaseItem == Constants::BaseItem::HeavyCrossbow && nModelPart == 15)
+        && pStats->HasFeat(Constants::Feat::RulersOfTheSea))
+    {
+        bCanUse = true;
+        nMod += 1;
+    }
+
+    if(bCanUse == false)
     {
         nMod -= 4;
     }
@@ -997,6 +1027,7 @@ int32_t Weapon::GetMeleeAttackBonus(CNWSCreatureStats* pStats, int32_t bOffHand,
     Weapon& plugin = *g_plugin;
     CNWSItem* pWeapon = nullptr;
     uint32_t nBaseItem;
+    bool bCanUse = false;
 
     int nBonus = plugin.m_GetMeleeAttackBonusHook->CallOriginal<int32_t>(pStats, bOffHand, bIncludeBase, bTouchAttack);
 
@@ -1017,24 +1048,40 @@ int32_t Weapon::GetMeleeAttackBonus(CNWSCreatureStats* pStats, int32_t bOffHand,
     if (pWeapon == nullptr)
     {
         nBaseItem = Constants::BaseItem::Gloves;
+        bCanUse = true;
     }
     else
     {
         nBaseItem = pWeapon->m_nBaseItem;
     }
 
-    if(plugin.GetIsArchaicWeapon(nBaseItem) && !(pStats->HasFeat(Constants::Feat::WeaponProficiencyArchaic)))
+    if(plugin.GetIsArchaicWeapon(nBaseItem) && pStats->HasFeat(Constants::Feat::WeaponProficiencyArchaic))
     {
-        nBonus -= 4;
+        bCanUse = true;
     }
-    else if(plugin.GetIsExoticWeapon(nBaseItem) && !(pStats->HasFeat(Constants::Feat::WeaponProficiencyExotic)))
+    else if(plugin.GetIsExoticWeapon(nBaseItem) && pStats->HasFeat(Constants::Feat::WeaponProficiencyExotic))
     {
-        nBonus -= 4;
+        bCanUse = true;
     }
     else if((nBaseItem == Constants::BaseItem::Kukri || nBaseItem == Constants::BaseItem::TwobladedSword)
-        && !(pStats->HasFeat(Constants::Feat::WeaponProficiencyExotic) || pStats->HasFeat(Constants::Feat::LightSaberProf)))
+        && pStats->HasFeat(Constants::Feat::LightSaberProf))
     {
-       nBonus -= 4; 
+       bCanUse = true; 
+    }
+
+    // special case - RulersOfTheSea feat
+    if((nBaseItem == Constants::BaseItem::Trident
+     || nBaseItem == Constants::BaseItem::CEP_Trident
+     || nBaseItem == Constants::BaseItem::CEP_Goad)
+        && pStats->HasFeat(Constants::Feat::RulersOfTheSea))
+    {
+        bCanUse = true;
+        nBonus += 1;
+    }
+
+    if(bCanUse == false)
+    {
+        nBonus -= 4;
     }
 
     // PnP rules- additional attack reductions for Mercurials
@@ -1077,6 +1124,7 @@ int32_t Weapon::GetRangedAttackBonus(CNWSCreatureStats* pStats, int32_t bInclude
     Weapon& plugin = *g_plugin;
     CNWSItem* pWeapon = nullptr;
     uint32_t nBaseItem;
+    bool bCanUse = false;
 
     int nBonus = plugin.m_GetRangedAttackBonusHook->CallOriginal<int32_t>(pStats, bIncludeBase, bTouchAttack);
 
@@ -1093,32 +1141,43 @@ int32_t Weapon::GetRangedAttackBonus(CNWSCreatureStats* pStats, int32_t bInclude
     }
 
     nBaseItem = pWeapon->m_nBaseItem;
+    LOG_INFO("part 0 %d", pWeapon->m_nModelPart[0]);
+    LOG_INFO("part 1 %d", pWeapon->m_nModelPart[1]);
+    LOG_INFO("part 2 %d", pWeapon->m_nModelPart[2]);
 
     if((nBaseItem == Constants::BaseItem::Sling || nBaseItem == Constants::BaseItem::Shortbow)
-        && !(pStats->HasFeat(Constants::Feat::PersonalFirearmsProficiency)))
+        && pStats->HasFeat(Constants::Feat::PersonalFirearmsProficiency))
     {
-       nBonus -= 4; 
+       bCanUse = true;
     }
     else if((nBaseItem == Constants::BaseItem::Longbow || nBaseItem == Constants::BaseItem::LightCrossbow)
-        && !(pStats->HasFeat(Constants::Feat::AdvancedFirearmsProficiency)))
+        && pStats->HasFeat(Constants::Feat::AdvancedFirearmsProficiency))
     {
-        nBonus -= 4;
+        bCanUse = true;
     }
     else if(nBaseItem == Constants::BaseItem::HeavyCrossbow 
-        && !(pStats->HasFeat(Constants::Feat::HeavyFirearmsProficiency)))
+        && pStats->HasFeat(Constants::Feat::HeavyFirearmsProficiency))
     {
-        nBonus -= 4;
+        bCanUse = true;
     }
-    else if((nBaseItem == Constants::BaseItem::Kukri || nBaseItem == Constants::BaseItem::TwobladedSword)
-        && !(pStats->HasFeat(Constants::Feat::WeaponProficiencyExotic) || pStats->HasFeat(Constants::Feat::LightSaberProf)))
+    else if(plugin.GetIsExoticWeapon(nBaseItem) && pStats->HasFeat(Constants::Feat::WeaponProficiencyExotic))
     {
-       nBonus -= 4; 
+        bCanUse = true;
     }
-    else if(plugin.GetIsExoticWeapon(nBaseItem) && !(pStats->HasFeat(Constants::Feat::WeaponProficiencyExotic)))
+    else if(plugin.GetIsArchaicWeapon(nBaseItem) && pStats->HasFeat(Constants::Feat::WeaponProficiencyArchaic))
     {
-        nBonus -= 4;
+        bCanUse = true;    
     }
-    else if(plugin.GetIsArchaicWeapon(nBaseItem) && !(pStats->HasFeat(Constants::Feat::WeaponProficiencyArchaic)))
+    
+    // special case - harpoon launcher
+    if((nBaseItem == Constants::BaseItem::HeavyCrossbow && pWeapon->m_nModelPart[2] == 15)
+        && pStats->HasFeat(Constants::Feat::RulersOfTheSea))
+    {
+        bCanUse = true;
+        nBonus += 1;
+    }
+
+    if(bCanUse == false)
     {
         nBonus -= 4;
     }
@@ -1320,8 +1379,10 @@ bool Weapon::GetIsExoticWeapon(uint32_t nBaseItem)
     {
     case Constants::BaseItem::DireMace:
     case Constants::BaseItem::DoubleAxe:
+    case Constants::BaseItem::TwobladedSword:
     case Constants::BaseItem::HeavyFlail:
     case Constants::BaseItem::Kama:
+    case Constants::BaseItem::Kukri:
     case Constants::BaseItem::Shuriken:
     case Constants::BaseItem::Whip:
     case Constants::BaseItem::Lance:
