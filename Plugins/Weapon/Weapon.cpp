@@ -1141,9 +1141,6 @@ int32_t Weapon::GetRangedAttackBonus(CNWSCreatureStats* pStats, int32_t bInclude
     }
 
     nBaseItem = pWeapon->m_nBaseItem;
-    LOG_INFO("part 0 %d", pWeapon->m_nModelPart[0]);
-    LOG_INFO("part 1 %d", pWeapon->m_nModelPart[1]);
-    LOG_INFO("part 2 %d", pWeapon->m_nModelPart[2]);
 
     if((nBaseItem == Constants::BaseItem::Sling || nBaseItem == Constants::BaseItem::Shortbow)
         && pStats->HasFeat(Constants::Feat::PersonalFirearmsProficiency))
