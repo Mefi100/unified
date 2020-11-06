@@ -8,36 +8,68 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 https://github.com/nwnxee/unified/compare/build8193.16...HEAD
 
 ### Added
+- Chat: targeted messages can now be sent on the Party or DM channels
 - Events: added skippable Acquire events to ItemEvents
+- Events: added skippable Disarm event to CombatEvents
+- Events: added `ACTION_RESULT` to Feat/Skill/Lock events for use in the _AFTER
+- Events: added Spell Interruption events to SpellEvents
+- Events: added Journal Open/Close events to JournalEvents
 - Tweaks: `NWNX_TWEAKS_HIDE_PLAYERS_ON_CHAR_LIST`
+- Tweaks: `NWNX_TWEAKS_FIX_ARMOR_DEX_BONUS_UNDER_ONE`
+- Tweaks: `NWNX_TWEAKS_FIX_ITEM_NULLPTR_IN_CITEMREPOSITORY`
 
 ##### New Plugins
-N/A
+The following plugins were added:
+- Feat: Allows to define a variety of effects that are granted to feat holders.
+- Tileset: An advanced plugin that exposes additional tileset and tile properties and allows builders to override the tiles of an area created with CreateArea().
+- Diagnostics: Plugin exposing diagnostic facilities to help server debugging.
 
 ##### New NWScript Functions
 - Area: GetTileInfo()
+- Area: ExportARE()
 - Creature: {Get|Set}WalkAnimation()
+- Creature: SetAttackRollOverride()
+- Creature: SetParryAllAttacks()
+- Events: ToggleIDWhitelist()
+- Events: AddIDToWhitelist()
+- Events: RemoveIDFromWhitelist()
+- Feat: SetFeatModifier()
 - Object: GetCurrentAnimation()
+- Player: AddCustomJournalEntry() and GetJournalEntry()
+- Race: SetFavoredEnemyFeat()
 - Util: GetScriptParamIsSet()
 
 ### Changed
+- Area: ExportGIT() now supports valid custom resource directory aliases. 
 - Events: `NWNX_ON_DM_SPAWN_OBJECT_*` now provides the resref as event data.
 - Events: `NWNX_ON_STORE_REQUEST_*_AFTER` now provides the result as event data.
+- Events: ResourceEvents now support valid custom resource directory aliases.
 - Util: added an optional appearance type parameter to CreateDoor()
+- Util: AddScript(), AddNSSFile() and RemoveNWNXResourceFile() now support valid custom resource directory aliases.
 - Visibility: added two new visibility types to always show an object regardless of range.
+- Weapon: Good Aim Feat now takes value from ruleset.2da
+- We now only allow builds with the `CMAKE_BUILD_TYPE=RelWithDebInfo` configuration. `Debug` builds produce unexpected behaviour and `Release` builds are generally unnecessary and mess with Assert functionality.
 
 ### Deprecated
 - Tweaks: `NWNX_TWEAKS_HIDE_DMS_ON_CHAR_LIST` has been deprecated, use `NWNX_TWEAKS_HIDE_PLAYERS_ON_CHAR_LIST` now
 
 ### Removed
-N/A
+- Optimizations: `OBJECT_TAG_LOOKUP` optimization has been removed. It caused instability and didn't really improve perf.
 
 ### Fixed
 - Administration: fix crash in DeletePlayerCharacter()
+- Core: debug dumps now properly resolve nwserver functions regardless of path and binary name used
+- Creature: removed an unnecessary free() in GetMeetsFeatRequirements() that may have led to crashes
+- Events: fixed a nullptr deref crash in BarterEvents
+- Feedback: fixed a bug where global combatlog and journal feedback message overrides couldn't be removed
+- MaxLevel: fixed bug interfering with leveling down NPCs
 - Object: fixed a possible crash in CheckFit()
+- Player: fixed bic getting overwritten when using PossessCreature() and crashing in between areas
 - Race: fixed effect clean up after level up
 - Rename: community name only obfuscates once a server reset
+- Rename: properly updates original name if NWNX_Creature_SetOriginalName() is used
 - Weapon: fixed bug in SetGreaterWeaponFocusFeat()
+- Weapon: fixed bug in offhand attack and damage bonus calculations with Greater Weapon feats and two handed weapons
 
 ## 8193.16
 https://github.com/nwnxee/unified/compare/build8193.13...build8193.16

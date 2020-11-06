@@ -239,6 +239,7 @@ _______________________________________
     TARGET_POSITION_X     | float  | |
     TARGET_POSITION_Y     | float  | |
     TARGET_POSITION_Z     | float  | |
+    ACTION_RESULT         | int    | TRUE/FALSE, only in _AFTER events
 
 _______________________________________
     ## DM Give Events
@@ -483,6 +484,19 @@ _______________________________________
     TARGET_OBJECT_ID      | object | Convert to object with StringToObject()
 
 _______________________________________
+    ## Disarm Events
+    - NWNX_ON_DISARM_BEFORE
+    - NWNX_ON_DISARM_AFTER
+
+    `OBJECT_SELF` = The creature who is being disarmed
+
+    Event Data Tag        | Type   | Notes
+    ----------------------|--------|-------
+    DISARMER_OBJECT_ID    | object | The object disarming the creature
+    FEAT_ID               | int    | The feat used to perform the disarming (Normal vs Improved Disarm)
+    ACTION_RESULT         | int    | TRUE/FALSE, only in _AFTER events
+
+_______________________________________
     ## Cast Spell Events
     - NWNX_ON_CAST_SPELL_BEFORE
     - NWNX_ON_CAST_SPELL_AFTER
@@ -515,7 +529,6 @@ _______________________________________
     Event Data Tag        | Type   | Notes |
     ----------------------|--------|-------|
     SPELL_MULTICLASS      | int | Index of the spell casting class (0-2) |
-    SPELL_LEVEL           | int | |
     SPELL_SLOT            | int | |
     SPELL_ID              | int | |
     SPELL_DOMAIN          | int | |
@@ -535,6 +548,22 @@ _______________________________________
     SPELL_MULTICLASS      | int    | Index of the spell casting class (0-2) |
     SPELL_LEVEL           | int    | |
     SPELL_SLOT            | int    | |
+
+_______________________________________
+    ## Spell Interrupted Events
+    - NWNX_ON_SPELL_INTERRUPTED_BEFORE
+    - NWNX_ON_SPELL_INTERRUPTED_AFTER
+
+    `OBJECT_SELF` = The creature whose spell was interrupted
+
+    Event Data Tag        | Type   | Notes |
+    ----------------------|--------|-------|
+    SPELL_ID              | int | |
+    SPELL_CLASS           | int | Index of the spell casting class (0-2) |
+    SPELL_DOMAIN          | int | |
+    SPELL_METAMAGIC       | int | |
+    SPELL_FEAT            | int | |
+    SPELL_SPONTANEOUS     | int | |
 
 _______________________________________
     ## Healer Kit Use Events
@@ -628,6 +657,7 @@ _______________________________________
     TARGET_POSITION_X     | float | |
     TARGET_POSITION_Y     | float | |
     TARGET_POSITION_Z     | float | |
+    ACTION_RESULT         | int    | TRUE/FALSE, only in _AFTER events
 
     @note Probably only really works with the following activated skills:
     `SKILL_ANIMAL_EMPATHY`, `SKILL_DISABLE_TRAP`, `SKILL_HEAL`, `SKILL_OPEN_LOCK`,
@@ -1044,6 +1074,7 @@ _______________________________________
     Event Data Tag        | Type   | Notes
     ----------------------|--------|-------
     DOOR                  | object | Convert to object with StringToObject()
+    ACTION_RESULT         | int    | TRUE/FALSE, only in _AFTER events
 
 _______________________________________
     ## Object Unlock Events
@@ -1057,6 +1088,7 @@ _______________________________________
     DOOR                  | object | Convert to object with StringToObject()
     THIEVES_TOOL          | object | Convert to object with StringToObject()
     ACTIVE_PROPERTY_INDEX | int    |
+    ACTION_RESULT         | int    | TRUE/FALSE, only in _AFTER events
 
 _______________________________________
     ## UUID Collision Events
@@ -1082,11 +1114,11 @@ _______________________________________
 
     Event Data Tag        | Type   | Notes
     ----------------------|--------|-------
-    ALIAS                 | string | NWNX for /nwnx, DEVELOPMENT for /development
+    ALIAS                 | string | NWNX for /nwnx, DEVELOPMENT for /development. Also supports valid aliases from the Custom Resman Definition File
     RESREF                | string | The ResRef of the file
     TYPE                  | int    | The type of the file, see NWNX_UTIL_RESREF_TYPE_*
 
-    Note: These events fire when a file gets added/removed/modified in the /nwnx or /development folder
+    Note: These events fire when a file gets added/removed/modified in resource folders like /nwnx, /development and those defined in the Custom Resman Definition File
 
 _______________________________________
     ## ELC Events
@@ -1200,6 +1232,18 @@ _______________________________________
     PLAYER_NEW_TO_MODULE  | int    | TRUE if it's the player's first time logging into the server since a restart |
 
 _______________________________________
+    ## Journal Open/Close Events
+    - NWNX_ON_JOURNAL_OPEN_BEFORE
+    - NWNX_ON_JOURNAL_OPEN_AFTER
+    - NWNX_ON_JOURNAL_CLOSE_BEFORE
+    - NWNX_ON_JOURNAL_CLOSE_AFTER
+
+    `OBJECT_SELF` = The player
+
+    Event Data Tag        | Type   | Notes
+    ----------------------|--------|-------
+
+_______________________________________
 */
 /*
 const int NWNX_EVENTS_OBJECT_TYPE_CREATURE          = 5;
@@ -1285,6 +1329,7 @@ string NWNX_Events_GetEventData(string tag);
 /// - Input Pause Event
 /// - Debug events
 /// - Store events
+/// - Disarm event
 void NWNX_Events_SkipEvent();
 
 /// Set the return value of the event.
@@ -1316,6 +1361,29 @@ void NWNX_Events_AddObjectToDispatchList(string sEvent, string sScript, object o
 
 /// Remove oObject from the dispatch list for sEvent+sScript.
 void NWNX_Events_RemoveObjectFromDispatchList(string sEvent, string sScript, object oObject);
+
+/// @brief Toggle the whitelisting of IDs for sEvent. If whitelisting is enabled, the event will only fire for IDs that are
+/// on its whitelist.
+///
+/// ONLY WORKS WITH THE FOLLOWING EVENTS -> ID TYPES:
+/// - NWNX_ON_CAST_SPELL -> SpellID
+///
+/// @note This enables the whitelist for ALL scripts subscribed to sEvent.
+/// @param sEvent The event name without _BEFORE / _AFTER.
+/// @param bEnable TRUE to enable the whitelist, FALSE to disable
+void NWNX_Events_ToggleIDWhitelist(string sEvent, int bEnable);
+
+/// @brief Add nID to the whitelist of sEvent.
+/// @note See NWNX_Events_ToggleIDWhitelist for valid events and ID types.
+/// @param sEvent The event name without _BEFORE / _AFTER.
+/// @param nID The ID.
+void NWNX_Events_AddIDToWhitelist(string sEvent, int nID);
+
+/// @brief Remove nID from the whitelist of sEvent.
+/// @note See NWNX_Events_ToggleIDWhitelist for valid events and ID types.
+/// @param sEvent The event name without _BEFORE / _AFTER.
+/// @param nID The ID.
+void NWNX_Events_RemoveIDFromWhitelist(string sEvent, int nID);
 
 /// @}
 
@@ -1414,6 +1482,33 @@ void NWNX_Events_RemoveObjectFromDispatchList(string sEvent, string sScript, obj
 
     NWNX_PushArgumentObject(NWNX_Events, sFunc, oObject);
     NWNX_PushArgumentString(NWNX_Events, sFunc, sScript);
+    NWNX_PushArgumentString(NWNX_Events, sFunc, sEvent);
+    NWNX_CallFunction(NWNX_Events, sFunc);
+}
+
+void NWNX_Events_ToggleIDWhitelist(string sEvent, int bEnable)
+{
+    string sFunc = "ToggleIDWhitelist";
+
+    NWNX_PushArgumentInt(NWNX_Events, sFunc, bEnable);
+    NWNX_PushArgumentString(NWNX_Events, sFunc, sEvent);
+    NWNX_CallFunction(NWNX_Events, sFunc);
+}
+
+void NWNX_Events_AddIDToWhitelist(string sEvent, int nID)
+{
+    string sFunc = "AddIDToWhitelist";
+
+    NWNX_PushArgumentInt(NWNX_Events, sFunc, nID);
+    NWNX_PushArgumentString(NWNX_Events, sFunc, sEvent);
+    NWNX_CallFunction(NWNX_Events, sFunc);
+}
+
+void NWNX_Events_RemoveIDFromWhitelist(string sEvent, int nID)
+{
+    string sFunc = "RemoveIDFromWhitelist";
+
+    NWNX_PushArgumentInt(NWNX_Events, sFunc, nID);
     NWNX_PushArgumentString(NWNX_Events, sFunc, sEvent);
     NWNX_CallFunction(NWNX_Events, sFunc);
 }
