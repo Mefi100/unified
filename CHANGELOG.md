@@ -4,16 +4,23 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
-## Unreleased
+## 8193.16-HEAD
 https://github.com/nwnxee/unified/compare/build8193.16...HEAD
 
 ### Added
 - Chat: targeted messages can now be sent on the Party or DM channels
+- Core: log file and crash dumps now include version and commit sha information
+- Core: added support for cp1251 (Central European) locale
 - Events: added skippable Acquire events to ItemEvents
 - Events: added skippable Disarm event to CombatEvents
 - Events: added `ACTION_RESULT` to Feat/Skill/Lock events for use in the _AFTER
 - Events: added Spell Interruption events to SpellEvents
+- Events: added skippable Has Feat event to FeatEvents
 - Events: added Journal Open/Close events to JournalEvents
+- Events: added Detect Mode event to StealthEvents
+- Events: added Combat Enter/Exit events to CombatEvents
+- Events: Stealth Mode can now bypass or perform Hide in Plain Sight with return values of "0" or "1" respectively
+- Events: Added Skippable/Result Changeable Faction Reputation event to FactionEvents
 - Tweaks: `NWNX_TWEAKS_HIDE_PLAYERS_ON_CHAR_LIST`
 - Tweaks: `NWNX_TWEAKS_FIX_ARMOR_DEX_BONUS_UNDER_ONE`
 - Tweaks: `NWNX_TWEAKS_FIX_ITEM_NULLPTR_IN_CITEMREPOSITORY`
@@ -30,17 +37,20 @@ The following plugins were added:
 - Creature: {Get|Set}WalkAnimation()
 - Creature: SetAttackRollOverride()
 - Creature: SetParryAllAttacks()
+- Creature: {Get|Set}NoPermanentDeath()
 - Events: ToggleIDWhitelist()
 - Events: AddIDToWhitelist()
 - Events: RemoveIDFromWhitelist()
 - Feat: SetFeatModifier()
 - Object: GetCurrentAnimation()
 - Player: AddCustomJournalEntry() and GetJournalEntry()
+- Player: CloseStore()
 - Race: SetFavoredEnemyFeat()
 - Util: GetScriptParamIsSet()
 
 ### Changed
-- Area: ExportGIT() now supports valid custom resource directory aliases. 
+- Area: ExportGIT() now supports valid custom resource directory aliases.
+- DotNET: Upgraded to Dotnet-5.
 - Events: `NWNX_ON_DM_SPAWN_OBJECT_*` now provides the resref as event data.
 - Events: `NWNX_ON_STORE_REQUEST_*_AFTER` now provides the result as event data.
 - Events: ResourceEvents now support valid custom resource directory aliases.
@@ -51,6 +61,7 @@ The following plugins were added:
 - We now only allow builds with the `CMAKE_BUILD_TYPE=RelWithDebInfo` configuration. `Debug` builds produce unexpected behaviour and `Release` builds are generally unnecessary and mess with Assert functionality.
 
 ### Deprecated
+- Events: Stealth Events have had their name changed from NWNX_ON_{ENTER|EXIT}_STEALTH_* to NWNX_ON_STEALTH_{ENTER|EXIT}_*. Please update your scripts as the old names will eventually be removed.
 - Tweaks: `NWNX_TWEAKS_HIDE_DMS_ON_CHAR_LIST` has been deprecated, use `NWNX_TWEAKS_HIDE_PLAYERS_ON_CHAR_LIST` now
 
 ### Removed
@@ -63,11 +74,13 @@ The following plugins were added:
 - Events: fixed a nullptr deref crash in BarterEvents
 - Feedback: fixed a bug where global combatlog and journal feedback message overrides couldn't be removed
 - MaxLevel: fixed bug interfering with leveling down NPCs
+- MaxLevel: fixed an issue with the plugin failing after a restart when reload-when-empty was set to true
 - Object: fixed a possible crash in CheckFit()
 - Player: fixed bic getting overwritten when using PossessCreature() and crashing in between areas
 - Race: fixed effect clean up after level up
 - Rename: community name only obfuscates once a server reset
 - Rename: properly updates original name if NWNX_Creature_SetOriginalName() is used
+- SkillRanks: fixed skill bonus for abilities not properly calculating when ability scores were negative
 - Weapon: fixed bug in SetGreaterWeaponFocusFeat()
 - Weapon: fixed bug in offhand attack and damage bonus calculations with Greater Weapon feats and two handed weapons
 

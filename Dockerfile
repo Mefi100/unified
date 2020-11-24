@@ -1,3 +1,6 @@
+# This image is for users who wish to build their images themselves. It uses the builder factory that is created
+# via the builder.Dockerfile and the base that is created via the base.Dockerfile
+
 FROM nwnxee/builder as builder
 WORKDIR /nwnx/home
 COPY ./ .
@@ -8,42 +11,8 @@ ARG CXX=g++
 ENV CXX=$CXX
 RUN Scripts/buildnwnx.sh -j $(nproc)
 
-FROM beamdog/nwserver:8193.16
-RUN mkdir -p /nwn/nwnx
+FROM nwnxee/nwnxee-base
 COPY --from=builder /nwnx/home/Binaries/* /nwn/nwnx/
-
-# Install plugin run dependencies
-RUN runDeps="hunspell \
-    libmariadb3 \
-    libpq5 \
-    libsqlite3-0 \
-    libruby2.5 \
-    luajit libluajit-5.1 \
-    libssl1.1 \
-    inotify-tools \
-    patch \
-    unzip \
-    dotnet-runtime-3.1" \
-    installDeps="ca-certificates wget gpg apt-transport-https" \
-    && apt-get update \
-    && apt-get install -y --no-install-recommends $installDeps \
-    && wget -qO- https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > microsoft.asc.gpg \
-    && wget -q https://packages.microsoft.com/config/debian/10/prod.list \
-    && mv microsoft.asc.gpg /etc/apt/trusted.gpg.d/ \
-    && mv prod.list /etc/apt/sources.list.d/microsoft-prod.list \
-    && apt-get update \
-    && apt-get -y install --no-install-recommends $runDeps
-
-# Patch run-server.sh with our modifications
-COPY --from=builder /nwnx/home/Scripts/Docker/run-server.patch /nwn/
-RUN patch /nwn/run-server.sh < /nwn/run-server.patch
-
-# Security upgrades and remove unneeded packages
-RUN apt-get -y upgrade \
-    && apt-get -y remove --purge wget gpg apt-transport-https unzip patch \
-    && apt-get -y autoremove \
-    && apt-get clean \
-    && rm -r /var/cache/apt /var/lib/apt/lists
 
 # Configure nwserver to run with nwnx
 ENV NWNX_CORE_LOAD_PATH=/nwn/nwnx/
