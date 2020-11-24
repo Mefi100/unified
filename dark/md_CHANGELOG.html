@@ -103,17 +103,24 @@ $(document).ready(function(){initNavTree('md_CHANGELOG.html',''); initResizable(
 <div class="textblock"><p>All notable changes to this project will be documented in this file.</p>
 <p>The format is based on <a href="https://keepachangelog.com/en/1.0.0/">Keep a Changelog</a>.</p>
 <h1><a class="anchor" id="autotoc_md8"></a>
-Unreleased</h1>
+8193.16-HEAD</h1>
 <p><a href="https://github.com/nwnxee/unified/compare/build8193.16...HEAD">https://github.com/nwnxee/unified/compare/build8193.16...HEAD</a></p>
 <h2><a class="anchor" id="autotoc_md9"></a>
 Added</h2>
 <ul>
 <li>Chat: targeted messages can now be sent on the Party or DM channels</li>
+<li>Core: log file and crash dumps now include version and commit sha information</li>
+<li>Core: added support for cp1251 (Central European) locale</li>
 <li>Events: added skippable Acquire events to ItemEvents</li>
 <li>Events: added skippable Disarm event to CombatEvents</li>
 <li>Events: added <code>ACTION_RESULT</code> to Feat/Skill/Lock events for use in the _AFTER</li>
 <li>Events: added Spell Interruption events to SpellEvents</li>
+<li>Events: added skippable Has Feat event to FeatEvents</li>
 <li>Events: added Journal Open/Close events to JournalEvents</li>
+<li>Events: added Detect Mode event to StealthEvents</li>
+<li>Events: added Combat Enter/Exit events to CombatEvents</li>
+<li>Events: Stealth Mode can now bypass or perform Hide in Plain Sight with return values of "0" or "1" respectively</li>
+<li>Events: Added Skippable/Result Changeable Faction Reputation event to FactionEvents</li>
 <li>Tweaks: <code>NWNX_TWEAKS_HIDE_PLAYERS_ON_CHAR_LIST</code></li>
 <li>Tweaks: <code>NWNX_TWEAKS_FIX_ARMOR_DEX_BONUS_UNDER_ONE</code></li>
 <li>Tweaks: <code>NWNX_TWEAKS_FIX_ITEM_NULLPTR_IN_CITEMREPOSITORY</code></li>
@@ -133,12 +140,14 @@ New NWScript Functions</h4>
 <li>Creature: {Get|Set}WalkAnimation()</li>
 <li>Creature: SetAttackRollOverride()</li>
 <li>Creature: SetParryAllAttacks()</li>
+<li>Creature: {Get|Set}NoPermanentDeath()</li>
 <li>Events: ToggleIDWhitelist()</li>
 <li>Events: AddIDToWhitelist()</li>
 <li>Events: RemoveIDFromWhitelist()</li>
 <li>Feat: SetFeatModifier()</li>
 <li>Object: GetCurrentAnimation()</li>
 <li>Player: AddCustomJournalEntry() and GetJournalEntry()</li>
+<li>Player: CloseStore()</li>
 <li>Race: SetFavoredEnemyFeat()</li>
 <li>Util: GetScriptParamIsSet()</li>
 </ul>
@@ -146,6 +155,7 @@ New NWScript Functions</h4>
 Changed</h2>
 <ul>
 <li>Area: ExportGIT() now supports valid custom resource directory aliases.</li>
+<li>DotNET: Upgraded to Dotnet-5.</li>
 <li>Events: <code>NWNX_ON_DM_SPAWN_OBJECT_*</code> now provides the resref as event data.</li>
 <li>Events: <code>NWNX_ON_STORE_REQUEST_*_AFTER</code> now provides the result as event data.</li>
 <li>Events: ResourceEvents now support valid custom resource directory aliases.</li>
@@ -158,6 +168,7 @@ Changed</h2>
 <h2><a class="anchor" id="autotoc_md13"></a>
 Deprecated</h2>
 <ul>
+<li>Events: Stealth Events have had their name changed from NWNX_ON_{ENTER|EXIT}_STEALTH_* to NWNX_ON_STEALTH_{ENTER|EXIT}_*. Please update your scripts as the old names will eventually be removed.</li>
 <li>Tweaks: <code>NWNX_TWEAKS_HIDE_DMS_ON_CHAR_LIST</code> has been deprecated, use <code>NWNX_TWEAKS_HIDE_PLAYERS_ON_CHAR_LIST</code> now</li>
 </ul>
 <h2><a class="anchor" id="autotoc_md14"></a>
@@ -174,11 +185,13 @@ Fixed</h2>
 <li>Events: fixed a nullptr deref crash in BarterEvents</li>
 <li>Feedback: fixed a bug where global combatlog and journal feedback message overrides couldn't be removed</li>
 <li>MaxLevel: fixed bug interfering with leveling down NPCs</li>
+<li>MaxLevel: fixed an issue with the plugin failing after a restart when reload-when-empty was set to true</li>
 <li>Object: fixed a possible crash in CheckFit()</li>
 <li>Player: fixed bic getting overwritten when using PossessCreature() and crashing in between areas</li>
 <li>Race: fixed effect clean up after level up</li>
 <li>Rename: community name only obfuscates once a server reset</li>
 <li>Rename: properly updates original name if <a class="el" href="group__creature.html#ga1ca18c6575ef041368e50f978441e7ca" title="Set the original first or last name of creature.">NWNX_Creature_SetOriginalName()</a> is used</li>
+<li>SkillRanks: fixed skill bonus for abilities not properly calculating when ability scores were negative</li>
 <li>Weapon: fixed bug in SetGreaterWeaponFocusFeat()</li>
 <li>Weapon: fixed bug in offhand attack and damage bonus calculations with Greater Weapon feats and two handed weapons</li>
 </ul>
@@ -911,7 +924,7 @@ Fixed</h2>
 		<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
 			<ul>
 				<li class="footer">
-					Generated on Fri Nov 6 2020 09:58:59 for NWNX:EE by <a href="http://www.doxygen.org/index.html">
+					Generated on Tue Nov 24 2020 16:22:27 for NWNX:EE by <a href="http://www.doxygen.org/index.html">
 					<img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.17.
 					<a href="../">Light version</a>
 				</li>
