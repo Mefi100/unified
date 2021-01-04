@@ -42,17 +42,18 @@ var NAVTREE =
 var NAVTREEINDEX =
 [
 "annotated.html",
-"group__admin.html#gaf93d0e820feb0342c21f3b3d1143d3c8",
-"group__creature.html#ga34030d81dd3ff20a18a96e336a3f97ca",
-"group__creature.html#gafdcf540c2ebaea7ac27563d74461b57d",
-"group__encounter.html#ga1094adf1239743f918d6aaeddbdea885",
-"group__nwnx.html#ga2314f3844fc63b5731fe41a678174790",
-"group__player.html#ga437385c6c111c59c8aaecd230c34c0c3",
-"group__redis.html#ga54287d82441086cf187b5768af08490d",
-"group__util.html#ga3e6a9ec855349ea41fda8ae3dce391ad",
-"nwnx__redis_8nss.html#a1d7abc4497d8f862a6e971699f5f6171",
-"nwnx__redis__short_8nss.html#a3ab71a95d791b27a0583c33bcb72fe1e",
-"structNWNX__Damage__DamageData.html#a2bafcf37cec79e490fd77391a8c376f0"
+"group__admin.html#gad6a1972c912d744a163b7ea2cfd9a8c2",
+"group__creature.html#ga2d409d9021d548809df96419085ae480",
+"group__creature.html#gaf399bc4df45965ec3ebe46d64346dd11",
+"group__dotnet.html#autotoc_md131",
+"group__feedback.html#ga68dcbf8f5a115248b35907225ceec53a",
+"group__object.html#gafc737bc3878fa25f216d2758653d1e93",
+"group__race.html#autotoc_md351",
+"group__sql.html#gaefc1bce86231177b8f972a8c0dc91a0b",
+"group__webhook.html#autotoc_md434",
+"nwnx__redis_8nss.html#ac967fb38d5cec2dfe471374a17959e24",
+"nwnx__redis__short_8nss.html#ae306f78bd94be6b92e358adbb227acc6",
+"structNWNX__Tileset__TileEdgesAndCorners.html"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';
