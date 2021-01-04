@@ -4,8 +4,36 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
-## 8193.16-HEAD
-https://github.com/nwnxee/unified/compare/build8193.16...HEAD
+## 8193.20-HEAD
+https://github.com/nwnxee/unified/compare/build8193.20...HEAD
+
+### Added
+- Experimental: Added `NWNX_EXPERIMENTAL_DISABLE_LEVELUP_VALIDATION` to disable levelup validation.
+- Experimental: Added `NWNX_EXPERIMENTAL_UNHARDCODE_RANGER_DUALWIELD` to remove the hardcoded effects of the Ranger's Dual-wield feat. This functionality is not compatible with the NWNX_ON_HAS_FEAT_* event.
+- Tweaks: Added `NWNX_TWEAKS_ALWAYS_RETURN_FULL_DEX_STAT` to have GetDEXStat() always return a creature's full dexterity stat.
+
+##### New Plugins
+- N/A
+
+##### New NWScript Functions
+- Creature: ComputeSafeLocation()
+- Util: GetInstructionLimit()
+- Util: {Get|Set}InstructionsExecuted();
+
+### Changed
+- N/A
+
+### Deprecated
+- Data: The NWNX_Data array implementation is deprecated. SQLite implementation available.  Shim include file provided for compatibility.
+
+### Removed
+- N/A
+
+### Fixed
+- N/A
+
+## 8193.16
+https://github.com/nwnxee/unified/compare/build8193.16...build8193.20
 
 ### Added
 - Chat: targeted messages can now be sent on the Party or DM channels
@@ -21,9 +49,11 @@ https://github.com/nwnxee/unified/compare/build8193.16...HEAD
 - Events: added Combat Enter/Exit events to CombatEvents
 - Events: Stealth Mode can now bypass or perform Hide in Plain Sight with return values of "0" or "1" respectively
 - Events: Added Skippable/Result Changeable Faction Reputation event to FactionEvents
+- Experimental: Added `NWNX_EXPERIMENTAL_ADJUST_REPUTATION_FIX` in an effort to correct a crash with factions/reputation
 - Tweaks: `NWNX_TWEAKS_HIDE_PLAYERS_ON_CHAR_LIST`
 - Tweaks: `NWNX_TWEAKS_FIX_ARMOR_DEX_BONUS_UNDER_ONE`
 - Tweaks: `NWNX_TWEAKS_FIX_ITEM_NULLPTR_IN_CITEMREPOSITORY`
+- Tweaks: `NWNX_TWEAKS_CLEAR_SPELL_EFFECTS_ON_TURDS`
 
 ##### New Plugins
 The following plugins were added:
@@ -47,6 +77,8 @@ The following plugins were added:
 - Player: CloseStore()
 - Race: SetFavoredEnemyFeat()
 - Util: GetScriptParamIsSet()
+- Util: SetDawnHour()
+- Util: SetDuskHour()
 
 ### Changed
 - Area: ExportGIT() now supports valid custom resource directory aliases.
@@ -72,6 +104,7 @@ The following plugins were added:
 - Core: debug dumps now properly resolve nwserver functions regardless of path and binary name used
 - Creature: removed an unnecessary free() in GetMeetsFeatRequirements() that may have led to crashes
 - Events: fixed a nullptr deref crash in BarterEvents
+- Events: fixed a nullptr deref crash in the AcquireItem event
 - Feedback: fixed a bug where global combatlog and journal feedback message overrides couldn't be removed
 - MaxLevel: fixed bug interfering with leveling down NPCs
 - MaxLevel: fixed an issue with the plugin failing after a restart when reload-when-empty was set to true
@@ -123,11 +156,12 @@ https://github.com/nwnxee/unified/compare/build8193.13...build8193.16
 - Weapon: {Get|Set}OneHalfStrength()
 
 ### Changed
+- Administration: added an optional sKickReason parameter to DeleteCharacter()
 - Damage: damage event script now also triggered by damage to placeables
 - Effect: (Un)PackEffect now supports vector params
 - Events: added a `RESULT` event data tag to LearnScroll in ItemEvents
 - Weapon: SetWeapon****Feat functions may be called multiple times for the same weapon, associating a new feat each time
-- Weapon: weapon feats defined in the 2da are no longer overridden by SetWeapon***Feat and will be used in addition to any set feats
+- Weapon: weapon feats defined in the 2da are no longer overridden by SetWeapon****Feat and will be used in addition to any set feats
 
 ### Deprecated
 - Object: StringToObject();

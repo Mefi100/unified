@@ -1487,9 +1487,9 @@ ArgumentStack Player::ToggleDM(ArgumentStack&& args)
 
                 if (isDM && !currentlyPlayerDM)
                 {
-                    pMessage->SendServerToPlayerDungeonMasterLoginState(pPlayer, true, true);
                     pPlayerInfo->m_bGameMasterPrivileges = true;
                     pPlayerInfo->m_bGameMasterIsPlayerLogin = true;
+                    pMessage->SendServerToPlayerDungeonMasterLoginState(pPlayer, true, true);
 
                     if (auto *pCreature = Utils::AsNWSCreature(Utils::GetGameObject(pPlayer->m_oidNWSObject)))
                     {
@@ -1507,9 +1507,11 @@ ArgumentStack Player::ToggleDM(ArgumentStack&& args)
                 }
                 else if (!isDM && currentlyPlayerDM)
                 {
-                    pMessage->SendServerToPlayerDungeonMasterLoginState(pPlayer, false, true);
+                    pPlayer->PossessCreature(Constants::OBJECT_INVALID, Constants::AssociateType::None);
+
                     pPlayerInfo->m_bGameMasterPrivileges = false;
                     pPlayerInfo->m_bGameMasterIsPlayerLogin = false;
+                    pMessage->SendServerToPlayerDungeonMasterLoginState(pPlayer, false, true);
 
                     if (auto *pCreature = Utils::AsNWSCreature(Utils::GetGameObject(pPlayer->m_oidNWSObject)))
                     {
@@ -1660,6 +1662,9 @@ ArgumentStack Player::RemoveEffectFromTURD(ArgumentStack&& args)
       ASSERT_OR_THROW(!effectTag.empty());
 
     auto *pTURDList = Utils::GetModule()->m_lstTURDList.m_pcExoLinkedListInternal;
+    if (!pTURDList)
+        return Services::Events::Arguments();
+
     for (auto *pNode = pTURDList->pHead; pNode; pNode = pNode->pNext)
     {
         auto *pTURD = static_cast<CNWSPlayerTURD*>(pNode->pObject);
