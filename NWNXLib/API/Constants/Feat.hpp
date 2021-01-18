@@ -1105,7 +1105,8 @@ namespace Feat
         ShotOnTheRun                                  = 2613,
         Strafe                                        = 2614,
         RulersOfTheSea                                = 2629,
-        LightSaberProf                                = 2633
+        LightSaberProf                                = 2633,
+        ScientistSmartAttack                          = 2845
     };
     constexpr int32_t MIN   = 0;
     constexpr int32_t MAX   = 65535;

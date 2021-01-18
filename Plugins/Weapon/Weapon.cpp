@@ -1040,6 +1040,17 @@ int32_t Weapon::GetAttackModifierVersus(CNWSCreatureStats* pStats, CNWSCreature*
         nMod -= 3;
     }
 
+    // scientist class - smart attack
+    if((nBaseItem == Constants::BaseItem::Sling || nBaseItem == Constants::BaseItem::Shortbow)
+        && pStats->HasFeat(Constants::Feat::ScientistSmartAttack))
+    {
+       if(pCreature->m_pStats->m_nIntelligenceModifier > pCreature->m_pStats->m_nDexterityModifier)
+       {
+           nMod += pCreature->m_pStats->m_nIntelligenceModifier;
+           nMod -= pCreature->m_pStats->m_nDexterityModifier;
+       }
+    }
+
     auto w = plugin.m_GreaterWeaponFocusMap.find(nBaseItem);
 
     bApplicableFeatExists = w != plugin.m_GreaterWeaponFocusMap.end();
@@ -1252,6 +1263,17 @@ int32_t Weapon::GetRangedAttackBonus(CNWSCreatureStats* pStats, int32_t bInclude
     {
         bCanUse = true;
         nBonus += 1;
+    }
+
+    // scientist class - smart attack
+    if((nBaseItem == Constants::BaseItem::Sling || nBaseItem == Constants::BaseItem::Shortbow)
+        && pStats->HasFeat(Constants::Feat::ScientistSmartAttack))
+    {
+       if(pStats->m_nIntelligenceModifier > pStats->m_nDexterityModifier)
+       {
+           nBonus += pStats->m_nIntelligenceModifier;
+           nBonus -= pStats->m_nDexterityModifier;
+       }
     }
 
     if(bCanUse == false)
