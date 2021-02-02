@@ -5,8 +5,6 @@
 #include "API/Globals.hpp"
 #include "API/Constants.hpp"
 
-#include "Services/Hooks/Hooks.hpp"
-#include "Utils.hpp"
 
 
 namespace Tweaks {
@@ -14,11 +12,11 @@ namespace Tweaks {
 using namespace NWNXLib;
 using namespace NWNXLib::API;
 
-NWNXLib::Hooking::FunctionHook* ParryAllAttacks::pResolveAttackRoll_hook;
-ParryAllAttacks::ParryAllAttacks(Services::HooksProxy* hooker)
+static Hooks::Hook s_ResolveAttackRoll_hook;
+ParryAllAttacks::ParryAllAttacks()
 {
-    pResolveAttackRoll_hook = hooker->RequestExclusiveHook
-        <Functions::_ZN12CNWSCreature17ResolveAttackRollEP10CNWSObject>(&CNWSCreature__ResolveAttackRoll_hook);
+    s_ResolveAttackRoll_hook = Hooks::HookFunction(Functions::_ZN12CNWSCreature17ResolveAttackRollEP10CNWSObject,
+                                            (void*)&CNWSCreature__ResolveAttackRoll_hook, Hooks::Order::Late);
 }
 
 
@@ -35,7 +33,7 @@ void ParryAllAttacks::CNWSCreature__ResolveAttackRoll_hook(CNWSCreature *pThis, 
             pCreature->m_pcCombatRound->m_bRoundPaused = false;
         }
     }
-    pResolveAttackRoll_hook->CallOriginal<void>(pThis, pTarget);
+    s_ResolveAttackRoll_hook->CallOriginal<void>(pThis, pTarget);
     if (bRoundPaused)
         Utils::AsNWSCreature(pTarget)->m_pcCombatRound->m_bRoundPaused = true;
 }

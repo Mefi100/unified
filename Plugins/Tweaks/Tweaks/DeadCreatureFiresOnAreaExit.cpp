@@ -7,8 +7,6 @@
 #include "API/Functions.hpp"
 #include "API/Globals.hpp"
 
-#include "Services/Hooks/Hooks.hpp"
-#include "Utils.hpp"
 
 
 namespace Tweaks {
@@ -16,11 +14,9 @@ namespace Tweaks {
 using namespace NWNXLib;
 using namespace NWNXLib::API;
 
-NWNXLib::Hooking::FunctionHook* DeadCreatureFiresOnAreaExit::pRemoveObjectFromArea_hook;
-DeadCreatureFiresOnAreaExit::DeadCreatureFiresOnAreaExit(Services::HooksProxy* hooker)
+DeadCreatureFiresOnAreaExit::DeadCreatureFiresOnAreaExit()
 {
-    pRemoveObjectFromArea_hook = hooker->RequestExclusiveHook
-        <Functions::_ZN8CNWSArea20RemoveObjectFromAreaEj>(&CNWSArea__RemoveObjectFromArea_hook);
+    static auto s_ReplacedFunc = Hooks::HookFunction(Functions::_ZN8CNWSArea20RemoveObjectFromAreaEj, (void*)&CNWSArea__RemoveObjectFromArea_hook, Hooks::Order::Final);
 }
 
 

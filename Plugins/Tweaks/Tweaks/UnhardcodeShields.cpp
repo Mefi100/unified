@@ -1,7 +1,5 @@
 #include "Tweaks/UnhardcodeShields.hpp"
 
-#include "Services/Hooks/Hooks.hpp"
-#include "Utils.hpp"
 
 #include "API/CNWBaseItem.hpp"
 #include "API/CNWBaseItemArray.hpp"
@@ -21,19 +19,22 @@ namespace Tweaks {
 using namespace NWNXLib;
 using namespace NWNXLib::API;
 
-UnhardcodeShields::UnhardcodeShields(Services::HooksProxy* hooker)
+static Hooks::Hook s_ComputeArmourClass;
+
+UnhardcodeShields::UnhardcodeShields()
 {
-    hooker->RequestExclusiveHook<Functions::_ZN8CNWSItem17ComputeArmorClassEv>(&CNWSItem__ComputeArmorClass);
-    hooker->RequestSharedHook<Functions::_ZN12CNWSCreature18ComputeArmourClassEP8CNWSItemii, void>(&CNWSCreature__ComputeArmourClass);
+    static auto s_ReplacedFunc = Hooks::HookFunction(Functions::_ZN8CNWSItem17ComputeArmorClassEv, (void*)&CNWSItem__ComputeArmorClass, Hooks::Order::Final);
+    s_ComputeArmourClass = Hooks::HookFunction(Functions::_ZN12CNWSCreature18ComputeArmourClassEP8CNWSItemii,
+                                        (void*)&CNWSCreature__ComputeArmourClass, Hooks::Order::Late);
 }
 
 int32_t UnhardcodeShields::CNWSItem__ComputeArmorClass(CNWSItem* thisPtr)
 {
     auto pBaseItem = Globals::Rules()->m_pBaseItemArray->GetBaseItem(thisPtr->m_nBaseItem);
-    int32_t nAC = 0;
+    int32_t nAC;
     if (pBaseItem->m_nModelType == Constants::ItemAppearanceType::ArmorModel)
     {
-        float fArmorAC = 0.;
+        float fArmorAC = 0.0f;
         Globals::Rules()->m_p2DArrays->m_pPartsChest->GetFLOATEntry(thisPtr->m_nArmorModelPart[Constants::ItemAppearance::ArmorModel_Torso], CExoString("ACBonus"), &fArmorAC);
         nAC = std::round(fArmorAC);
     }
@@ -45,15 +46,15 @@ int32_t UnhardcodeShields::CNWSItem__ComputeArmorClass(CNWSItem* thisPtr)
     return nAC;
 }
 
-void UnhardcodeShields::CNWSCreature__ComputeArmourClass(bool before, CNWSCreature* thisPtr, CNWSItem* pItemToEquip, BOOL bEquipping, BOOL bLoadingItem)
+void UnhardcodeShields::CNWSCreature__ComputeArmourClass(CNWSCreature* thisPtr, CNWSItem* pItemToEquip, BOOL bEquipping, BOOL bLoadingItem)
 {
-    if (before || !bEquipping)
-        return;
+    s_ComputeArmourClass->CallOriginal<void>(thisPtr, pItemToEquip, bEquipping, bLoadingItem);
 
-    if (pItemToEquip->m_nBaseItem == Constants::BaseItem::SmallShield
-        || pItemToEquip->m_nBaseItem == Constants::BaseItem::LargeShield
-        || pItemToEquip->m_nBaseItem == Constants::BaseItem::TowerShield
-        || pItemToEquip->m_nBaseItem == Constants::BaseItem::Armor)
+    if (!bEquipping ||
+        pItemToEquip->m_nBaseItem == Constants::BaseItem::SmallShield ||
+        pItemToEquip->m_nBaseItem == Constants::BaseItem::LargeShield ||
+        pItemToEquip->m_nBaseItem == Constants::BaseItem::TowerShield ||
+        pItemToEquip->m_nBaseItem == Constants::BaseItem::Armor)
     {
         //Let the vanilla function take care of real shields and armor
         return;
@@ -78,9 +79,9 @@ void UnhardcodeShields::CNWSCreature__ComputeArmourClass(bool before, CNWSCreatu
     }
     else if (bEquipping && pItemToEquip)
     {
-        if (thisPtr->m_pStats->m_nBaseShieldArcaneSpellFailure
-            || thisPtr->m_pStats->m_nShieldCheckPenalty
-            || thisPtr->m_pStats->m_nACShieldBase)
+        if (thisPtr->m_pStats->m_nBaseShieldArcaneSpellFailure ||
+            thisPtr->m_pStats->m_nShieldCheckPenalty ||
+            thisPtr->m_pStats->m_nACShieldBase)
         {
             //Shield-like item unequipped
             bSendArcaneFailureUpdate = true;
@@ -102,7 +103,7 @@ void UnhardcodeShields::CNWSCreature__ComputeArmourClass(bool before, CNWSCreatu
         auto pMessage = new CNWCCMessageData();
         pMessage->SetInteger(0, nArcaneFailure);
         pMessage->SetInteger(1, thisPtr->m_pStats->m_nArmorCheckPenalty + thisPtr->m_pStats->m_nShieldCheckPenalty);
-        thisPtr->SendFeedbackMessage(0x47, pMessage, 0);
+        thisPtr->SendFeedbackMessage(0x47, pMessage, nullptr);
     }
 }
 

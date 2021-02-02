@@ -1,10 +1,9 @@
 #pragma once
 
-#include "Plugin.hpp"
-#include "Services/Events/Events.hpp"
+#include "nwnx.hpp"
 #include "API/CNWSObject.hpp"
 
-using ArgumentStack = NWNXLib::Services::Events::ArgumentStack;
+using ArgumentStack = NWNXLib::Events::ArgumentStack;
 
 namespace Object {
 
@@ -62,6 +61,8 @@ private:
     ArgumentStack DoSpellLevelAbsorption    (ArgumentStack&& args);
     ArgumentStack SetHasInventory           (ArgumentStack&& args);
     ArgumentStack GetCurrentAnimation       (ArgumentStack&& args);
+    ArgumentStack GetAILevel                (ArgumentStack&& args);
+    ArgumentStack SetAILevel                (ArgumentStack&& args);
 
     CNWSObject *object(ArgumentStack& args);
 };

@@ -1,6 +1,5 @@
 #include "Tweaks/HideClassesOnCharList.hpp"
 
-#include "Services/Hooks/Hooks.hpp"
 
 #include "API/CAppManager.hpp"
 #include "API/CNWSCreature.hpp"
@@ -14,14 +13,14 @@ namespace Tweaks {
 using namespace NWNXLib;
 using namespace NWNXLib::API;
 
-HideClassesOnCharList::HideClassesOnCharList(Services::HooksProxy* hooker)
+HideClassesOnCharList::HideClassesOnCharList()
 {
-    hooker->RequestExclusiveHook<API::Functions::_ZN11CNWSMessage49SendServerToPlayerPlayModuleCharacterListResponseEjji>
-        (&SendServerToPlayerPlayModuleCharacterListResponseHook);
+    static auto s_ReplacedFunc = Hooks::HookFunction(API::Functions::_ZN11CNWSMessage49SendServerToPlayerPlayModuleCharacterListResponseEjji,
+                 (void*)&SendServerToPlayerPlayModuleCharacterListResponseHook, Hooks::Order::Final);
 }
 
-int32_t HideClassesOnCharList::SendServerToPlayerPlayModuleCharacterListResponseHook(
-    CNWSMessage* thisPtr, PlayerID playerId, ObjectID charId, int32_t add)
+int32_t HideClassesOnCharList::SendServerToPlayerPlayModuleCharacterListResponseHook(CNWSMessage* thisPtr, PlayerID playerId,
+                                                                                     ObjectID charId, int32_t add)
 {
     thisPtr->CreateWriteMessage(sizeof(playerId), playerId, true);
 

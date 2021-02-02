@@ -1,12 +1,10 @@
 #pragma once
 
-#include "Plugin.hpp"
-#include "Services/Events/Events.hpp"
-#include "Services/Hooks/Hooks.hpp"
+#include "nwnx.hpp"
 #include <map>
 #include <bitset>
 
-using ArgumentStack = NWNXLib::Services::Events::ArgumentStack;
+using ArgumentStack = NWNXLib::Events::ArgumentStack;
 
 namespace Appearance {
 
@@ -18,8 +16,7 @@ public:
 
 private:
     static CNWSPlayer *Player(ArgumentStack& args);
-    static void ComputeGameObjectUpdateForObjectHook(bool, CNWSMessage*,
-        CNWSPlayer*, CNWSObject*, CGameObjectArray*, ObjectID);
+    static void ComputeGameObjectUpdateForObjectHook(CNWSMessage*, CNWSPlayer*, CNWSObject*, CGameObjectArray*, ObjectID);
 
     enum OverrideType {
         AppearanceType  = 0,

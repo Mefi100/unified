@@ -1,7 +1,5 @@
 #include "Tweaks/FixDispelEffectLevels.hpp"
 
-#include "Services/Hooks/Hooks.hpp"
-#include "Utils.hpp"
 
 #include "API/CAppManager.hpp"
 #include "API/CNWCCMessageData.hpp"
@@ -21,18 +19,16 @@ namespace Tweaks
 using namespace NWNXLib;
 using namespace NWNXLib::API;
 
-FixDispelEffectLevels::FixDispelEffectLevels(Services::HooksProxy* hooker)
+FixDispelEffectLevels::FixDispelEffectLevels()
 {
-    hooker->RequestExclusiveHook<Functions::_ZN21CNWSEffectListHandler21OnApplyDispelAllMagicEP10CNWSObjectP11CGameEffecti>
-        (&CNWSEffectListHandler__OnApplyDispelAllMagic);
-    hooker->RequestExclusiveHook<Functions::_ZN21CNWSEffectListHandler22OnApplyDispelBestMagicEP10CNWSObjectP11CGameEffecti>
-        (&CNWSEffectListHandler__OnApplyDispelBestMagic);
+    static auto s_ApplyDispelAllMagic  = Hooks::HookFunction(Functions::_ZN21CNWSEffectListHandler21OnApplyDispelAllMagicEP10CNWSObjectP11CGameEffecti,
+                 (void*)&CNWSEffectListHandler__OnApplyDispelAllMagic, Hooks::Order::Final);
+    static auto s_ApplyDispelBestMagic = Hooks::HookFunction(Functions::_ZN21CNWSEffectListHandler22OnApplyDispelBestMagicEP10CNWSObjectP11CGameEffecti,
+                 (void*)&CNWSEffectListHandler__OnApplyDispelBestMagic, Hooks::Order::Final);
 }
 
-int32_t FixDispelEffectLevels::CNWSEffectListHandler__OnApplyDispelAllMagic(CNWSEffectListHandler* thisPtr, CNWSObject* pObject, CGameEffect* pEffect, BOOL bLoadingGame)
+int32_t FixDispelEffectLevels::CNWSEffectListHandler__OnApplyDispelAllMagic(CNWSEffectListHandler*, CNWSObject* pObject, CGameEffect* pEffect, BOOL)
 {
-    (void)thisPtr;
-    (void)bLoadingGame;
     auto nDispelLevel = pEffect->GetInteger(0);
     int nDispelledEffects = 0;
     auto* pCreatorObject = Utils::GetGameObject(pEffect->m_oidCreator);
@@ -97,10 +93,8 @@ int32_t FixDispelEffectLevels::CNWSEffectListHandler__OnApplyDispelAllMagic(CNWS
     return 1;
 }
 
-int32_t FixDispelEffectLevels::CNWSEffectListHandler__OnApplyDispelBestMagic(CNWSEffectListHandler* thisPtr, CNWSObject* pObject, CGameEffect* pEffect, BOOL bLoadingGame)
+int32_t FixDispelEffectLevels::CNWSEffectListHandler__OnApplyDispelBestMagic(CNWSEffectListHandler*, CNWSObject* pObject, CGameEffect* pEffect, BOOL)
 {
-    (void)thisPtr;
-    (void)bLoadingGame;
     auto nDispelLevel = pEffect->GetInteger(0);
     if (nDispelLevel < 0)
     {

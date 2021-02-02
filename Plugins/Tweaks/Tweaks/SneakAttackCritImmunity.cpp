@@ -9,7 +9,6 @@
 #include "API/Functions.hpp"
 #include "API/Globals.hpp"
 #include "API/Constants.hpp"
-#include "Services/Hooks/Hooks.hpp"
 
 #include <cmath>
 
@@ -19,10 +18,12 @@ namespace Tweaks {
 using namespace NWNXLib;
 using namespace NWNXLib::API;
 
-SneakAttackCritImmunity::SneakAttackCritImmunity(Services::HooksProxy* hooker)
+SneakAttackCritImmunity::SneakAttackCritImmunity()
 {
-    hooker->RequestExclusiveHook<Functions::_ZN12CNWSCreature18ResolveSneakAttackEPS_>(&CNWSCreature__ResolveSneakAttack_hook);
-    hooker->RequestExclusiveHook<Functions::_ZN12CNWSCreature18ResolveDeathAttackEPS_>(&CNWSCreature__ResolveDeathAttack_hook);
+    static auto s_ResolveSneakAttack = Hooks::HookFunction(Functions::_ZN12CNWSCreature18ResolveSneakAttackEPS_,
+                 (void*)&CNWSCreature__ResolveSneakAttack_hook, Hooks::Order::Final);
+    static auto s_ResolveDeathAttack = Hooks::HookFunction(Functions::_ZN12CNWSCreature18ResolveDeathAttackEPS_,
+                 (void*)&CNWSCreature__ResolveDeathAttack_hook, Hooks::Order::Final);
 }
 
 void SneakAttackCritImmunity::CNWSCreature__ResolveSneakAttack_hook(CNWSCreature *pThis, CNWSCreature *pTarget)

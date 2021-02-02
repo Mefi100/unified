@@ -1,6 +1,5 @@
 #include "Tweaks/StringToIntBaseToAuto.hpp"
 
-#include "Services/Hooks/Hooks.hpp"
 
 #include "API/CNWVirtualMachineCommands.hpp"
 #include "API/CVirtualMachine.hpp"
@@ -14,14 +13,14 @@ using namespace NWNXLib;
 using namespace NWNXLib::API;
 using namespace NWNXLib::API::Constants;
 
-StringToIntBaseToAuto::StringToIntBaseToAuto(Services::HooksProxy* hooker)
+StringToIntBaseToAuto::StringToIntBaseToAuto()
 {
-    hooker->RequestExclusiveHook<Functions::_ZN25CNWVirtualMachineCommands31ExecuteCommandStringConversionsEii>
-                                    (&CNWVirtualMachineCommands__ExecuteCommandStringConversions_hook);
+    static auto s_ReplacedFunc = Hooks::HookFunction(Functions::_ZN25CNWVirtualMachineCommands31ExecuteCommandStringConversionsEii,
+                 (void*)&CNWVirtualMachineCommands__ExecuteCommandStringConversions_hook, Hooks::Order::Final);
 }
 
-int32_t StringToIntBaseToAuto::CNWVirtualMachineCommands__ExecuteCommandStringConversions_hook(
-        CNWVirtualMachineCommands* thisPtr, int32_t nCommandId, int32_t nParameters)
+int32_t StringToIntBaseToAuto::CNWVirtualMachineCommands__ExecuteCommandStringConversions_hook(CNWVirtualMachineCommands* thisPtr,
+                                                                                               int32_t nCommandId, int32_t nParameters)
 {
     ASSERT(thisPtr); ASSERT(nParameters == 1);
     auto *vm = Globals::VirtualMachine();

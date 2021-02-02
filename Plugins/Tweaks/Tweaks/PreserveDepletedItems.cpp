@@ -5,8 +5,6 @@
 #include "API/Functions.hpp"
 #include "API/Globals.hpp"
 
-#include "Services/Hooks/Hooks.hpp"
-#include "Utils.hpp"
 
 
 namespace Tweaks {
@@ -14,32 +12,33 @@ namespace Tweaks {
 using namespace NWNXLib;
 using namespace NWNXLib::API;
 
-PreserveDepletedItems::PreserveDepletedItems(Services::HooksProxy* hooker)
+static Hooks::Hook s_AIActionItemCastSpellHook;
+
+PreserveDepletedItems::PreserveDepletedItems()
 {
-    hooker->RequestSharedHook<Functions::_ZN12CNWSCreature21AIActionItemCastSpellEP20CNWSObjectActionNode, uint32_t>(&CNWSCreature__AIActionItemCastSpell_hook);
+    s_AIActionItemCastSpellHook = Hooks::HookFunction(Functions::_ZN12CNWSCreature21AIActionItemCastSpellEP20CNWSObjectActionNode,
+                                               (void*)&CNWSCreature__AIActionItemCastSpell_hook, Hooks::Order::Late);
 }
 
 
-void PreserveDepletedItems::CNWSCreature__AIActionItemCastSpell_hook(bool before, CNWSCreature*, CNWSObjectActionNode *pNode)
+uint32_t PreserveDepletedItems::CNWSCreature__AIActionItemCastSpell_hook(CNWSCreature *thisPtr, CNWSObjectActionNode *pNode)
 {
-    static int bPlot;
-    // If at risk of destroying the item, set the item to plot, then set it back
-    // afterwards to its original value.
-    auto *pItem = Utils::AsNWSItem(Utils::GetGameObject((ObjectID)(uintptr_t)pNode->m_pParameter[0]));
-    if (pItem)
+    if (auto *pItem = Utils::AsNWSItem(Utils::GetGameObject((ObjectID)(uintptr_t)pNode->m_pParameter[0])))
     {
-        if (before)
-        {
-            bPlot = pItem->m_bPlotObject;
-            if(pItem->m_nNumCharges > 0 && pItem->m_nNumCharges <= 5)
-                pItem->m_bPlotObject = true;
-        }
-        else
-        {
-            pItem->m_bPlotObject = bPlot;
-        }
-    }
-}
+        int32_t bPlot = pItem->m_bPlotObject;
 
+        if(pItem->m_nNumCharges > 0 && pItem->m_nNumCharges <= 5)
+            pItem->m_bPlotObject = true;
+
+        auto retVal = s_AIActionItemCastSpellHook->CallOriginal<uint32_t>(thisPtr, pNode);
+
+        pItem->m_bPlotObject = bPlot;
+
+        return retVal;
+
+    }
+
+    return s_AIActionItemCastSpellHook->CallOriginal<uint32_t>(thisPtr, pNode);
+}
 
 }

@@ -1,7 +1,5 @@
 #include "Tweaks/ItemChargesCost.hpp"
 
-#include "Services/Hooks/Hooks.hpp"
-#include "Utils.hpp"
 
 #include "API/CExoArrayList.hpp"
 #include "API/CNWBaseItem.hpp"
@@ -17,10 +15,10 @@ namespace Tweaks {
 using namespace NWNXLib;
 using namespace NWNXLib::API;
 
-int ItemChargesCost::s_savedCharges = 0;
-int ItemChargesCost::s_chargesCostBehavior = 0;
+static int s_chargesCostBehavior;
+static Hooks::Hook s_CalculateBaseCostsHook;
 
-ItemChargesCost::ItemChargesCost(Services::HooksProxy* hooker, int mode)
+ItemChargesCost::ItemChargesCost(int mode)
 {
     s_chargesCostBehavior = mode;
     if (mode < 1 || mode > 3)
@@ -28,17 +26,16 @@ ItemChargesCost::ItemChargesCost(Services::HooksProxy* hooker, int mode)
         LOG_INFO("Unknown value for NWNX_TWEAKS_ITEM_CHARGES_COST_MODE.");
         return;
     }
-    hooker->RequestSharedHook<Functions::_ZN8CNWSItem18CalculateBaseCostsEv, void>
-        (&CNWSItem__CalculateBaseCosts_sharedhook);
+    s_CalculateBaseCostsHook = Hooks::HookFunction(Functions::_ZN8CNWSItem18CalculateBaseCostsEv,
+                                            (void*)&CNWSItem__CalculateBaseCosts_sharedhook, Hooks::Order::Early);
 }
 
-void ItemChargesCost::CNWSItem__CalculateBaseCosts_sharedhook(bool before, CNWSItem* pThis)
+void ItemChargesCost::CNWSItem__CalculateBaseCosts_sharedhook(CNWSItem* pThis)
 {
-    if (before)
+    int32_t savedCharges = pThis->m_nNumCharges;
+
+    switch (s_chargesCostBehavior)
     {
-        s_savedCharges = pThis->m_nNumCharges;
-        switch (s_chargesCostBehavior)
-        {
         case 1:
             pThis->m_nNumCharges = std::min(pThis->m_nNumCharges * 5, 250);
             break;
@@ -48,13 +45,11 @@ void ItemChargesCost::CNWSItem__CalculateBaseCosts_sharedhook(bool before, CNWSI
         case 3:
             pThis->m_nNumCharges *= 5;
             break;
-        }
-    }
-    else
-    {
-        pThis->m_nNumCharges = s_savedCharges;
     }
 
+    s_CalculateBaseCostsHook->CallOriginal<void>(pThis);
+
+    pThis->m_nNumCharges = savedCharges;
 }
 
 }

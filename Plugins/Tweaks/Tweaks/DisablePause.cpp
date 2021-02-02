@@ -1,7 +1,5 @@
 #include "Tweaks/DisablePause.hpp"
 
-#include "Services/Hooks/Hooks.hpp"
-#include "Utils.hpp"
 
 #include "API/CAppManager.hpp"
 #include "API/CServerExoAppInternal.hpp"
@@ -14,11 +12,12 @@ namespace Tweaks {
 using namespace NWNXLib;
 using namespace NWNXLib::API;
 
-NWNXLib::Hooking::FunctionHook* DisablePause::pSetPauseState_hook;
-DisablePause::DisablePause(Services::HooksProxy* hooker)
+static Hooks::Hook s_SetPauseState_hook;
+
+DisablePause::DisablePause()
 {
-    pSetPauseState_hook = hooker->RequestExclusiveHook
-        <Functions::_ZN21CServerExoAppInternal13SetPauseStateEhi>(&CServerExoAppInternal__SetPauseState_hook);
+    s_SetPauseState_hook = Hooks::HookFunction(Functions::_ZN21CServerExoAppInternal13SetPauseStateEhi,
+                                        (void*)&CServerExoAppInternal__SetPauseState_hook, Hooks::Order::Latest);
 }
 
 void DisablePause::CServerExoAppInternal__SetPauseState_hook(CServerExoAppInternal* thisPtr, uint8_t nState, int32_t bPause)
@@ -26,7 +25,7 @@ void DisablePause::CServerExoAppInternal__SetPauseState_hook(CServerExoAppIntern
     // nState=1 - timestop
     // nState=2 - DM pause
     if (nState != 2)
-        pSetPauseState_hook->CallOriginal<void>(thisPtr, nState, bPause);
+        s_SetPauseState_hook->CallOriginal<void>(thisPtr, nState, bPause);
 }
 
 }
