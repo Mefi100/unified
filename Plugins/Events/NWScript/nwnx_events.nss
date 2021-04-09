@@ -1313,6 +1313,74 @@ _______________________________________
     @note Some emotes have a voiceline that will still play when the event is skipped. These voicelines can be skipped in the NWNX_ON_QUICKCHAT_* event.
 
 _______________________________________
+    ## Combat Damage Resistance/Reduction Broken Event
+    - NWNX_ON_COMBAT_DR_BROKEN_BEFORE
+    - NWNX_ON_COMBAT_DR_BROKEN_AFTER
+
+    `OBJECT_SELF` = The creature whose DR gets broken
+
+    Event Data Tag        | Type   | Notes
+    ----------------------|--------|-------
+    TYPE                  | int    | 1 for DamageResistance, 0 for DamageReduction |
+
+    @note This event only fires when DR gets broken in combat.
+
+_______________________________________
+    ## Creature Unpossess Familiar Event
+    - NWNX_ON_UNPOSSESS_FAMILIAR_BEFORE
+    - NWNX_ON_UNPOSSESS_FAMILIAR_AFTER
+
+    `OBJECT_SELF` = The creature unpossessing a familiar
+
+    Event Data Tag        | Type   | Notes
+    ----------------------|--------|-------
+    FAMILIAR              | object | The familiar. Convert to object with StringToObject() |
+
+_______________________________________
+    ## Client Levelup Begin Event
+    - NWNX_ON_CLIENT_LEVEL_UP_BEGIN_BEFORE
+    - NWNX_ON_CLIENT_LEVEL_UP_BEGIN_AFTER
+
+    `OBJECT_SELF` = The player clicking the levelup button
+
+    Event Data Tag        | Type   | Notes
+    ----------------------|--------|-------
+
+_______________________________________
+    ## Creature Possess Familiar Event
+    - NWNX_ON_POSSESS_FAMILIAR_BEFORE
+    - NWNX_ON_POSSESS_FAMILIAR_AFTER
+
+    `OBJECT_SELF` = The creature possessing a familiar
+
+    Event Data Tag        | Type   | Notes
+    ----------------------|--------|-------
+    FAMILIAR              | object | The familiar. Convert to object with StringToObject() |
+_______________________________________
+    ## Player CharacterSheet Permitted Event
+    - NWNX_ON_CHARACTER_SHEET_PERMITTED_BEFORE
+    - NWNX_ON_CHARACTER_SHEET_PERMITTED_AFTER
+
+    `OBJECT_SELF` = The player trying to view a charactersheet
+
+    Event Data Tag        | Type   | Notes
+    ----------------------|--------|-------
+    TARGET                | object | Convert to object with StringToObject() |
+
+    @note When skipping this event, be sure to set the event result.
+_______________________________________
+    ## Player CharacterSheet Open/Close Events
+    - NWNX_ON_CHARACTER_SHEET_OPEN_BEFORE
+    - NWNX_ON_CHARACTER_SHEET_OPEN_AFTER
+    - NWNX_ON_CHARACTER_SHEET_CLOSE_BEFORE
+    - NWNX_ON_CHARACTER_SHEET_CLOSE_AFTER
+
+    `OBJECT_SELF` = The player opening or closing a charactersheet
+
+    Event Data Tag        | Type   | Notes
+    ----------------------|--------|-------
+    TARGET                | object | Convert to object with StringToObject() |
+_______________________________________
 */
 /*
 const int NWNX_EVENTS_OBJECT_TYPE_CREATURE          = 5;
@@ -1402,6 +1470,9 @@ string NWNX_Events_GetEventData(string tag);
 /// - Disarm event
 /// - {Enter|Exit}Detect events
 /// - Faction events
+/// - UnpossessFamiliar event
+/// - ClientLevelUpBegin event
+/// - CharacterSheetPermitted event
 void NWNX_Events_SkipEvent();
 
 /// Set the return value of the event.
@@ -1420,6 +1491,7 @@ void NWNX_Events_SkipEvent();
 /// - Has Feat event -> "1" or "0"
 /// - Stealth event -> "1" to perform HiPS (without the feat), "0" to bypass HiPS
 /// - Faction set reputation event -> The new reputation to apply instead. ("0" - "100")
+/// - CharacterSheetPermitted event -> "1" allow the player to view the character sheet or "0" to disallow
 void NWNX_Events_SetEventResult(string data);
 
 /// Returns the current event name
@@ -1467,8 +1539,8 @@ void NWNX_Events_SubscribeEvent(string evt, string script)
 {
     string sFunc = "SubscribeEvent";
 
-    NWNX_PushArgumentString(NWNX_Events, sFunc, script);
-    NWNX_PushArgumentString(NWNX_Events, sFunc, evt);
+    NWNX_PushArgumentString(script);
+    NWNX_PushArgumentString(evt);
     NWNX_CallFunction(NWNX_Events, sFunc);
 }
 
@@ -1476,8 +1548,8 @@ void NWNX_Events_UnsubscribeEvent(string evt, string script)
 {
     string sFunc = "UnsubscribeEvent";
 
-    NWNX_PushArgumentString(NWNX_Events, sFunc, script);
-    NWNX_PushArgumentString(NWNX_Events, sFunc, evt);
+    NWNX_PushArgumentString(script);
+    NWNX_PushArgumentString(evt);
     NWNX_CallFunction(NWNX_Events, sFunc);
 }
 
@@ -1485,8 +1557,8 @@ void NWNX_Events_PushEventData(string tag, string data)
 {
     string sFunc = "PushEventData";
 
-    NWNX_PushArgumentString(NWNX_Events, sFunc, data);
-    NWNX_PushArgumentString(NWNX_Events, sFunc, tag);
+    NWNX_PushArgumentString(data);
+    NWNX_PushArgumentString(tag);
     NWNX_CallFunction(NWNX_Events, sFunc);
 }
 
@@ -1494,19 +1566,19 @@ int NWNX_Events_SignalEvent(string evt, object target)
 {
     string sFunc = "SignalEvent";
 
-    NWNX_PushArgumentObject(NWNX_Events, sFunc, target);
-    NWNX_PushArgumentString(NWNX_Events, sFunc, evt);
+    NWNX_PushArgumentObject(target);
+    NWNX_PushArgumentString(evt);
     NWNX_CallFunction(NWNX_Events, sFunc);
-    return NWNX_GetReturnValueInt(NWNX_Events, sFunc);
+    return NWNX_GetReturnValueInt();
 }
 
 string NWNX_Events_GetEventData(string tag)
 {
     string sFunc = "GetEventData";
 
-    NWNX_PushArgumentString(NWNX_Events, sFunc, tag);
+    NWNX_PushArgumentString(tag);
     NWNX_CallFunction(NWNX_Events, sFunc);
-    return NWNX_GetReturnValueString(NWNX_Events, sFunc);
+    return NWNX_GetReturnValueString();
 }
 
 void NWNX_Events_SkipEvent()
@@ -1520,7 +1592,7 @@ void NWNX_Events_SetEventResult(string data)
 {
     string sFunc = "SetEventResult";
 
-    NWNX_PushArgumentString(NWNX_Events, sFunc, data);
+    NWNX_PushArgumentString(data);
     NWNX_CallFunction(NWNX_Events, sFunc);
 }
 
@@ -1529,16 +1601,16 @@ string NWNX_Events_GetCurrentEvent()
     string sFunc = "GetCurrentEvent";
 
     NWNX_CallFunction(NWNX_Events, sFunc);
-    return NWNX_GetReturnValueString(NWNX_Events, sFunc);
+    return NWNX_GetReturnValueString();
 }
 
 void NWNX_Events_ToggleDispatchListMode(string sEvent, string sScript, int bEnable)
 {
     string sFunc = "ToggleDispatchListMode";
 
-    NWNX_PushArgumentInt(NWNX_Events, sFunc, bEnable);
-    NWNX_PushArgumentString(NWNX_Events, sFunc, sScript);
-    NWNX_PushArgumentString(NWNX_Events, sFunc, sEvent);
+    NWNX_PushArgumentInt(bEnable);
+    NWNX_PushArgumentString(sScript);
+    NWNX_PushArgumentString(sEvent);
     NWNX_CallFunction(NWNX_Events, sFunc);
 }
 
@@ -1546,9 +1618,9 @@ void NWNX_Events_AddObjectToDispatchList(string sEvent, string sScript, object o
 {
     string sFunc = "AddObjectToDispatchList";
 
-    NWNX_PushArgumentObject(NWNX_Events, sFunc, oObject);
-    NWNX_PushArgumentString(NWNX_Events, sFunc, sScript);
-    NWNX_PushArgumentString(NWNX_Events, sFunc, sEvent);
+    NWNX_PushArgumentObject(oObject);
+    NWNX_PushArgumentString(sScript);
+    NWNX_PushArgumentString(sEvent);
     NWNX_CallFunction(NWNX_Events, sFunc);
 }
 
@@ -1556,9 +1628,9 @@ void NWNX_Events_RemoveObjectFromDispatchList(string sEvent, string sScript, obj
 {
     string sFunc = "RemoveObjectFromDispatchList";
 
-    NWNX_PushArgumentObject(NWNX_Events, sFunc, oObject);
-    NWNX_PushArgumentString(NWNX_Events, sFunc, sScript);
-    NWNX_PushArgumentString(NWNX_Events, sFunc, sEvent);
+    NWNX_PushArgumentObject(oObject);
+    NWNX_PushArgumentString(sScript);
+    NWNX_PushArgumentString(sEvent);
     NWNX_CallFunction(NWNX_Events, sFunc);
 }
 
@@ -1566,8 +1638,8 @@ void NWNX_Events_ToggleIDWhitelist(string sEvent, int bEnable)
 {
     string sFunc = "ToggleIDWhitelist";
 
-    NWNX_PushArgumentInt(NWNX_Events, sFunc, bEnable);
-    NWNX_PushArgumentString(NWNX_Events, sFunc, sEvent);
+    NWNX_PushArgumentInt(bEnable);
+    NWNX_PushArgumentString(sEvent);
     NWNX_CallFunction(NWNX_Events, sFunc);
 }
 
@@ -1575,8 +1647,8 @@ void NWNX_Events_AddIDToWhitelist(string sEvent, int nID)
 {
     string sFunc = "AddIDToWhitelist";
 
-    NWNX_PushArgumentInt(NWNX_Events, sFunc, nID);
-    NWNX_PushArgumentString(NWNX_Events, sFunc, sEvent);
+    NWNX_PushArgumentInt(nID);
+    NWNX_PushArgumentString(sEvent);
     NWNX_CallFunction(NWNX_Events, sFunc);
 }
 
@@ -1584,7 +1656,7 @@ void NWNX_Events_RemoveIDFromWhitelist(string sEvent, int nID)
 {
     string sFunc = "RemoveIDFromWhitelist";
 
-    NWNX_PushArgumentInt(NWNX_Events, sFunc, nID);
-    NWNX_PushArgumentString(NWNX_Events, sFunc, sEvent);
+    NWNX_PushArgumentInt(nID);
+    NWNX_PushArgumentString(sEvent);
     NWNX_CallFunction(NWNX_Events, sFunc);
 }
