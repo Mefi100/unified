@@ -14,6 +14,7 @@ https://github.com/nwnxee/unified/compare/build8193.21...HEAD
 - Events: added events `NWNX_ON_CHARACTER_SHEET_{OPEN|CLOSE}_*` which fire when a player opens or closes a charactersheeet.   
 - Tweaks: added `NWNX_TWEAKS_SEND_TLK_OVERRIDE_BEFORE_CHARGEN` to send TlkTable overrides before Character Generation.
 - Tweaks: added `NWNX_TWEAKS_RETAIN_LOCAL_VARIABLES_ON_ITEM_SPLIT` to retain local variables when an item is split.
+- Tweaks: added `NWNX_TWEAKS_PREVENT_ATTACK_BONUS_BYPASSING_REDUCTION` to make attack bonuses not bypass reductions (soak).
 
 ##### New Plugins
 - NoStack: Adds `NWNX_NOSTACK_*` variables to control ability, skill, attack and/or saving throw bonuses stacking
@@ -47,7 +48,7 @@ https://github.com/nwnxee/unified/compare/build8193.21...HEAD
 - Tweaks: removed deprecated `NWNX_TWEAKS_HIDE_DMS_ON_CHAR_LIST` environment variable. Use `NWNX_TWEAKS_HIDE_PLAYERS_ON_CHAR_LIST`
 
 ### Fixed
-- N/A
+- Race: Effects vs Child Races are now functional. Battle Training Vs. * feats now apply their bonus against child races as well.
 
 ## 8193.20
 https://github.com/nwnxee/unified/compare/build8193.20...build8193.21
