@@ -115,6 +115,7 @@ private:
     int  GetLevelByClass   (CNWSCreatureStats* pStats, uint32_t nClassType);
     bool GetIsArchaicWeapon(uint32_t nBaseItem);
     bool GetIsExoticWeapon(uint32_t nBaseItem);
+    bool GetIsSimpleWeapon(uint32_t nBaseItem);
 
     // Devastating Critical data
     DevastatingCriticalDataStr m_DCData;

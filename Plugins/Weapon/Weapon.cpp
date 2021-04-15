@@ -1007,6 +1007,10 @@ int32_t Weapon::GetAttackModifierVersus(CNWSCreatureStats* pStats, CNWSCreature*
     {
         bCanUse = true;
     }
+    else if(plugin.GetIsSimpleWeapon(nBaseItem) && pStats->HasFeat(Constants::Feat::WeaponProficiencySimple))
+    {
+        bCanUse = true;
+    }
     else if(plugin.GetIsArchaicWeapon(nBaseItem) && pStats->HasFeat(Constants::Feat::WeaponProficiencyArchaic))
     {
         bCanUse = true;
@@ -1159,7 +1163,11 @@ int32_t Weapon::GetMeleeAttackBonus(CNWSCreatureStats* pStats, int32_t bOffHand,
         nBaseItem = pWeapon->m_nBaseItem;
     }
 
-    if(plugin.GetIsArchaicWeapon(nBaseItem) && pStats->HasFeat(Constants::Feat::WeaponProficiencyArchaic))
+    if(plugin.GetIsSimpleWeapon(nBaseItem) && pStats->HasFeat(Constants::Feat::WeaponProficiencySimple))
+    {
+        bCanUse = true;
+    }
+    else if(plugin.GetIsArchaicWeapon(nBaseItem) && pStats->HasFeat(Constants::Feat::WeaponProficiencyArchaic))
     {
         bCanUse = true;
     }
@@ -1261,13 +1269,17 @@ int32_t Weapon::GetRangedAttackBonus(CNWSCreatureStats* pStats, int32_t bInclude
     {
         bCanUse = true;
     }
-    else if(plugin.GetIsExoticWeapon(nBaseItem) && pStats->HasFeat(Constants::Feat::WeaponProficiencyExotic))
+    else if(plugin.GetIsSimpleWeapon(nBaseItem) && pStats->HasFeat(Constants::Feat::WeaponProficiencySimple))
     {
         bCanUse = true;
     }
     else if(plugin.GetIsArchaicWeapon(nBaseItem) && pStats->HasFeat(Constants::Feat::WeaponProficiencyArchaic))
     {
         bCanUse = true;    
+    }
+    else if(plugin.GetIsExoticWeapon(nBaseItem) && pStats->HasFeat(Constants::Feat::WeaponProficiencyExotic))
+    {
+        bCanUse = true;
     }
     
     // special case - harpoon launcher
@@ -1453,11 +1465,32 @@ int Weapon::GetLevelByClass(CNWSCreatureStats *pStats, uint32_t nClassType)
     return 0;
 }
 
+bool Weapon::GetIsSimpleWeapon(uint32_t nBaseItem)
+{
+    switch (nBaseItem)
+    {
+    case Constants::BaseItem::Club:
+    case Constants::BaseItem::LightMace:
+    case Constants::BaseItem::QuarterStaff:
+    case Constants::BaseItem::Sickle:
+    case Constants::BaseItem::Dart:
+    case Constants::BaseItem::Dagger:
+    case Constants::BaseItem::ShortSpear:
+
+        return true;  
+    default:
+        return false;
+    }
+}
+
 bool Weapon::GetIsArchaicWeapon(uint32_t nBaseItem)
 {
     switch (nBaseItem)
     {
     case Constants::BaseItem::Longsword:
+    case Constants::BaseItem::Shortsword:
+    case Constants::BaseItem::Handaxe:
+    case Constants::BaseItem::ThrowingAxe:
     case Constants::BaseItem::Battleaxe:
     case Constants::BaseItem::BastardSword:
     case Constants::BaseItem::Halberd:
@@ -1468,6 +1501,11 @@ bool Weapon::GetIsArchaicWeapon(uint32_t nBaseItem)
     case Constants::BaseItem::Rapier:
     case Constants::BaseItem::Scimitar:
     case Constants::BaseItem::DwarvenWaraxe:
+    case Constants::BaseItem::HeavyFlail:
+    case Constants::BaseItem::LightFlail:
+    case Constants::BaseItem::LightHammer:
+    case Constants::BaseItem::Warhammer:
+    case Constants::BaseItem::Lance:
     case Constants::BaseItem::CEP_Falchion:
     case Constants::BaseItem::CEP_Maul:
     case Constants::BaseItem::CEP_MercurialLongSword:
@@ -1492,12 +1530,10 @@ bool Weapon::GetIsExoticWeapon(uint32_t nBaseItem)
     case Constants::BaseItem::DireMace:
     case Constants::BaseItem::DoubleAxe:
     case Constants::BaseItem::TwobladedSword:
-    case Constants::BaseItem::HeavyFlail:
     case Constants::BaseItem::Kama:
     case Constants::BaseItem::Kukri:
     case Constants::BaseItem::Shuriken:
     case Constants::BaseItem::Whip:
-    case Constants::BaseItem::Lance:
     case Constants::BaseItem::CEP_Sai:
     case Constants::BaseItem::CEP_Nunchaku:
     case Constants::BaseItem::CEP_DoubleScimitar:
